@@ -1,1 +1,159 @@
 @import "tailwindcss";
+
+/* Base Mobile Responsive Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+  background: #000000;
+  color: white;
+}
+
+/* Prevent iOS zoom on input focus */
+@media (max-width: 768px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Increase touch target sizes */
+  button,
+  [role="button"],
+  .home-screen-nav-button,
+  .main-screen-card {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Improve scrolling */
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Reduce blur effects for better performance */
+  .home-screen-header,
+  .main-screen-header,
+  .inner-screen-form-container {
+    backdrop-filter: blur(10px) !important;
+  }
+}
+
+/* Safe area insets for modern phones */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top)) !important;
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  .safe-area-left {
+    padding-left: max(1rem, env(safe-area-inset-left)) !important;
+  }
+
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right)) !important;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+
+  .home-screen-navigation,
+  .main-screen-cards-grid {
+    gap: 0.75rem !important;
+  }
+
+  .home-screen-nav-button,
+  .main-screen-card {
+    padding: 0.75rem !important;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles */
+@media print {
+
+  .home-screen-header,
+  .main-screen-header,
+  .home-screen-navigation,
+  .main-screen-footer,
+  button {
+    display: none !important;
+  }
+
+  .home-screen-content,
+  .main-screen-content {
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* Utility classes */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* Scrollbar styles for mobile */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.7);
+}
