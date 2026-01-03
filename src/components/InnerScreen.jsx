@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function InnerScreen() {
@@ -7,6 +7,20 @@ function InnerScreen() {
   const [name, setName] = useState('');
   const [program, setProgram] = useState('');
   const [error, setError] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSmallMobile, setIsSmallMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsSmallMobile(window.innerWidth <= 480);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const programs = [
     { value: 'BSCS', label: 'BSCS' },
@@ -35,7 +49,6 @@ function InnerScreen() {
       return;
     }
 
-    // Navigate with student data
     navigate('/subjects', {
       state: {
         rollNo: rollNo.trim().toUpperCase(),
@@ -51,8 +64,11 @@ function InnerScreen() {
       display: 'flex',
       position: 'relative',
       overflow: 'hidden',
-      background: '#000000'
+      background: '#000000',
+      flexDirection: isMobile ? 'column' : 'row',
+      padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '0'
     }}>
+      {/* Background Elements */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -71,12 +87,13 @@ function InnerScreen() {
         animation: 'twinkle 2s ease-in-out infinite alternate'
       }} />
 
+      {/* Responsive background circles */}
       <div style={{
         position: 'absolute',
-        top: '15%',
-        right: '10%',
-        width: '500px',
-        height: '500px',
+        top: isSmallMobile ? '5%' : isMobile ? '10%' : '15%',
+        right: isSmallMobile ? '5%' : isMobile ? '8%' : '10%',
+        width: isSmallMobile ? '200px' : isMobile ? '300px' : '500px',
+        height: isSmallMobile ? '200px' : isMobile ? '300px' : '500px',
         background: 'radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%)',
         borderRadius: '50%',
         filter: 'blur(80px)',
@@ -85,10 +102,10 @@ function InnerScreen() {
 
       <div style={{
         position: 'absolute',
-        bottom: '10%',
-        left: '5%',
-        width: '450px',
-        height: '450px',
+        bottom: isSmallMobile ? '5%' : isMobile ? '8%' : '10%',
+        left: isSmallMobile ? '5%' : isMobile ? '5%' : '5%',
+        width: isSmallMobile ? '180px' : isMobile ? '250px' : '450px',
+        height: isSmallMobile ? '180px' : isMobile ? '250px' : '450px',
         background: 'radial-gradient(circle, rgba(14, 165, 233, 0.18) 0%, transparent 70%)',
         borderRadius: '50%',
         filter: 'blur(90px)',
@@ -128,42 +145,46 @@ function InnerScreen() {
         }
       `}</style>
 
+      {/* Left Content Section */}
       <div style={{
-        flex: '1',
+        flex: isMobile ? '0 1 auto' : '1',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: '3rem',
+        padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '3rem',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        width: '100%'
       }}>
         <div style={{
-          maxWidth: '580px',
-          animation: 'fadeIn 1s ease'
+          animation: 'fadeIn 1s ease',
+          width: '100%',
+          maxWidth: isMobile ? '100%' : '580px',
+          margin: isMobile ? '0 auto' : '0'
         }}>
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            padding: '0.5rem 1.25rem',
+            padding: isSmallMobile ? '0.4rem 0.75rem' : isMobile ? '0.5rem 1rem' : '0.5rem 1.25rem',
             background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(14, 165, 233, 0.15))',
             border: '1px solid rgba(6, 182, 212, 0.4)',
             borderRadius: '50px',
-            fontSize: '0.875rem',
+            fontSize: isSmallMobile ? '0.75rem' : isMobile ? '0.8rem' : '0.875rem',
             fontWeight: '600',
-            marginBottom: '2rem',
+            marginBottom: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '2rem',
             backdropFilter: 'blur(10px)',
             color: '#67e8f9'
           }}>
-            <span style={{ fontSize: '1.25rem' }}>🚀</span>
+            <span style={{ fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.25rem' }}>🚀</span>
             <span>Advanced Learning Platform</span>
           </div>
 
           <h1 style={{
-            fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+            fontSize: isSmallMobile ? '1.75rem' : isMobile ? '2.2rem' : 'clamp(2.5rem, 6vw, 4.5rem)',
             fontWeight: '900',
             lineHeight: '1.1',
-            marginBottom: '1.5rem',
+            marginBottom: isSmallMobile ? '0.75rem' : isMobile ? '1rem' : '1.5rem',
             color: 'white',
             textShadow: '0 0 80px rgba(6, 182, 212, 0.5)'
           }}>
@@ -181,8 +202,8 @@ function InnerScreen() {
           </h1>
 
           <p style={{
-            fontSize: '1.25rem',
-            marginBottom: '3rem',
+            fontSize: isSmallMobile ? '0.95rem' : isMobile ? '1.05rem' : '1.25rem',
+            marginBottom: isSmallMobile ? '1.5rem' : isMobile ? '2rem' : '3rem',
             color: 'rgba(255, 255, 255, 0.7)',
             lineHeight: '1.8',
             fontWeight: '400'
@@ -193,7 +214,7 @@ function InnerScreen() {
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '1.25rem'
+            gap: isSmallMobile ? '0.75rem' : isMobile ? '1rem' : '1.25rem'
           }}>
             {[
               { icon: '🎯', title: 'Collaborative Learning', desc: 'Learn with peers, not tutors' },
@@ -203,8 +224,8 @@ function InnerScreen() {
               <div key={idx} className="feature-item" style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '1.25rem',
-                padding: '1.25rem 1.75rem',
+                gap: isSmallMobile ? '0.75rem' : isMobile ? '1rem' : '1.25rem',
+                padding: isSmallMobile ? '0.75rem' : isMobile ? '1rem 1.25rem' : '1.25rem 1.75rem',
                 background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(14, 165, 233, 0.1))',
                 borderRadius: '16px',
                 backdropFilter: 'blur(20px)',
@@ -225,24 +246,32 @@ function InnerScreen() {
                   e.currentTarget.style.boxShadow = 'none';
                 }}>
                 <div style={{
-                  width: '50px',
-                  height: '50px',
+                  width: isSmallMobile ? '40px' : isMobile ? '45px' : '50px',
+                  height: isSmallMobile ? '40px' : isMobile ? '45px' : '50px',
                   background: 'linear-gradient(135deg, #06b6d4, #0ea5e9)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.5rem',
+                  fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.5rem',
                   flexShrink: 0,
                   boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)'
                 }}>
                   {feature.icon}
                 </div>
                 <div>
-                  <h3 style={{ color: 'white', fontSize: '1.1rem', fontWeight: '700', marginBottom: '0.25rem' }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: isSmallMobile ? '0.95rem' : isMobile ? '1rem' : '1.1rem',
+                    fontWeight: '700',
+                    marginBottom: '0.25rem'
+                  }}>
                     {feature.title}
                   </h3>
-                  <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}>
+                  <p style={{
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontSize: isSmallMobile ? '0.8rem' : isMobile ? '0.85rem' : '0.9rem'
+                  }}>
                     {feature.desc}
                   </p>
                 </div>
@@ -252,45 +281,48 @@ function InnerScreen() {
         </div>
       </div>
 
+      {/* Right Form Section */}
       <div style={{
-        flex: '0 0 500px',
+        flex: isMobile ? '0 1 auto' : '0 0 500px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem',
+        padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '2rem',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        width: '100%'
       }}>
         <div className="glow-card" style={{
           width: '100%',
-          maxWidth: '440px',
+          maxWidth: isSmallMobile ? '100%' : isMobile ? '400px' : '440px',
           background: 'rgba(20, 20, 20, 0.8)',
           backdropFilter: 'blur(20px)',
-          padding: '3rem 2.5rem',
+          padding: isSmallMobile ? '1.5rem' : isMobile ? '2rem' : '3rem 2.5rem',
           borderRadius: '28px',
           border: '1px solid rgba(6, 182, 212, 0.35)',
-          animation: 'slideUp 0.8s ease'
+          animation: 'slideUp 0.8s ease',
+          margin: '0 auto'
         }}>
           <div style={{
             textAlign: 'center',
-            marginBottom: '2.5rem'
+            marginBottom: isSmallMobile ? '1.5rem' : isMobile ? '2rem' : '2.5rem'
           }}>
             <div style={{
-              width: '70px',
-              height: '70px',
+              width: isSmallMobile ? '50px' : isMobile ? '60px' : '70px',
+              height: isSmallMobile ? '50px' : isMobile ? '60px' : '70px',
               background: 'linear-gradient(135deg, #06b6d4, #0ea5e9)',
               borderRadius: '20px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 1.5rem',
-              fontSize: '2rem',
+              fontSize: isSmallMobile ? '1.5rem' : isMobile ? '1.8rem' : '2rem',
               boxShadow: '0 8px 25px rgba(6, 182, 212, 0.35)'
             }}>
               📚
             </div>
             <h2 style={{
-              fontSize: '2rem',
+              fontSize: isSmallMobile ? '1.5rem' : isMobile ? '1.8rem' : '2rem',
               fontWeight: '900',
               color: 'white',
               marginBottom: '0.5rem'
@@ -299,7 +331,7 @@ function InnerScreen() {
             </h2>
             <p style={{
               color: 'rgba(255, 255, 255, 0.6)',
-              fontSize: '1rem'
+              fontSize: isSmallMobile ? '0.9rem' : '1rem'
             }}>
               Enter your credentials to continue
             </p>
@@ -311,7 +343,7 @@ function InnerScreen() {
               marginBottom: '0.75rem',
               color: 'rgba(255, 255, 255, 0.9)',
               fontWeight: '600',
-              fontSize: '0.95rem'
+              fontSize: isSmallMobile ? '0.9rem' : '0.95rem'
             }}>
               Roll Number
             </label>
@@ -325,10 +357,10 @@ function InnerScreen() {
               }}
               style={{
                 width: '100%',
-                padding: '1rem 1.25rem',
+                padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                 borderRadius: '14px',
                 border: '1px solid rgba(6, 182, 212, 0.35)',
-                fontSize: '1rem',
+                fontSize: '16px',
                 outline: 'none',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box',
@@ -354,7 +386,7 @@ function InnerScreen() {
               marginBottom: '0.75rem',
               color: 'rgba(255, 255, 255, 0.9)',
               fontWeight: '600',
-              fontSize: '0.95rem'
+              fontSize: isSmallMobile ? '0.9rem' : '0.95rem'
             }}>
               Your Name
             </label>
@@ -368,10 +400,10 @@ function InnerScreen() {
               }}
               style={{
                 width: '100%',
-                padding: '1rem 1.25rem',
+                padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                 borderRadius: '14px',
                 border: '1px solid rgba(6, 182, 212, 0.35)',
-                fontSize: '1rem',
+                fontSize: '16px',
                 outline: 'none',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box',
@@ -397,7 +429,7 @@ function InnerScreen() {
               marginBottom: '0.75rem',
               color: 'rgba(255, 255, 255, 0.9)',
               fontWeight: '600',
-              fontSize: '0.95rem'
+              fontSize: isSmallMobile ? '0.9rem' : '0.95rem'
             }}>
               Select Your Program
             </label>
@@ -409,10 +441,10 @@ function InnerScreen() {
               }}
               style={{
                 width: '100%',
-                padding: '1rem 1.25rem',
+                padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                 borderRadius: '14px',
                 border: '1px solid rgba(6, 182, 212, 0.35)',
-                fontSize: '1rem',
+                fontSize: '16px',
                 outline: 'none',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box',
@@ -463,26 +495,27 @@ function InnerScreen() {
             onClick={handleSubmit}
             style={{
               width: '100%',
-              padding: '1.1rem',
+              padding: isSmallMobile ? '0.9rem' : '1.1rem',
               background: 'linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%)',
               color: '#000',
               border: 'none',
               borderRadius: '14px',
-              fontSize: '1.1rem',
+              fontSize: isSmallMobile ? '1rem' : '1.1rem',
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               boxShadow: '0 4px 15px rgba(6, 182, 212, 0.25)',
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              minHeight: '44px'
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 8px 25px rgba(6, 182, 212, 0.35)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(6, 182, 212, 0.35)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 4px 15px rgba(6, 182, 212, 0.25)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(6, 182, 212, 0.25)';
             }}
           >
             Continue →
