@@ -1,13 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const MainScreen = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSmallMobile, setIsSmallMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsSmallMobile(window.innerWidth <= 480);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Get student data from navigation state or use defaults
-  // Check if state exists and has the required properties
   const studentData = (location.state && (location.state.rollNo || location.state.studentData))
     ? (location.state.studentData || location.state)
     : {
@@ -74,7 +87,6 @@ const MainScreen = () => {
   ];
 
   const handleCardClick = (card) => {
-    // Navigate to HomeScreen with both student and subject data
     navigate('/home', {
       state: {
         studentData: studentData,
@@ -167,7 +179,7 @@ const MainScreen = () => {
 
       {/* Header */}
       <header style={{
-        padding: '1rem 2rem',
+        padding: isSmallMobile ? '0.75rem 1rem' : isMobile ? '1rem' : '1rem 2rem',
         background: 'rgba(10, 10, 10, 0.95)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
@@ -180,41 +192,49 @@ const MainScreen = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           maxWidth: '1400px',
-          margin: '0 auto'
+          margin: '0 auto',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? '1rem' : '0',
+          width: '100%'
         }}>
           {/* Left */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '1rem'
+            gap: isSmallMobile ? '0.75rem' : '1rem',
+            flexDirection: isMobile ? 'column' : 'row',
+            width: isMobile ? '100%' : 'auto',
+            justifyContent: isMobile ? 'center' : 'flex-start'
           }}>
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              padding: '0.5rem 1.25rem',
+              padding: isSmallMobile ? '0.4rem 0.75rem' : '0.5rem 1.25rem',
               background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.2))',
               border: '1px solid rgba(6, 182, 212, 0.3)',
               borderRadius: '12px',
-              fontSize: '0.9rem',
+              fontSize: isSmallMobile ? '0.8rem' : '0.9rem',
               fontWeight: '600',
               color: '#67e8f9',
               boxShadow: '0 4px 15px rgba(6, 182, 212, 0.2)'
             }}>
-              <span style={{ fontSize: '1.1rem' }}>📚</span>
+              <span style={{ fontSize: isSmallMobile ? '0.9rem' : '1.1rem' }}>📚</span>
               <span>StudyHive</span>
             </div>
 
             {/* Display user info */}
             <div style={{
-              padding: '0.5rem 1rem',
+              padding: isSmallMobile ? '0.4rem 0.75rem' : '0.5rem 1rem',
               background: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '10px',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              fontSize: '0.85rem',
+              fontSize: isSmallMobile ? '0.75rem' : '0.85rem',
               display: 'flex',
               gap: '0.5rem',
-              alignItems: 'center'
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              justifyContent: isMobile ? 'center' : 'flex-start'
             }}>
               <span style={{
                 color: '#67e8f9',
@@ -237,22 +257,26 @@ const MainScreen = () => {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.75rem'
+            gap: isSmallMobile ? '0.5rem' : '0.75rem',
+            justifyContent: isMobile ? 'center' : 'flex-end',
+            width: isMobile ? '100%' : 'auto'
           }}>
             <button
               style={{
-                padding: '0.6rem 1.25rem',
+                padding: isSmallMobile ? '0.5rem 0.75rem' : '0.6rem 1.25rem',
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '10px',
                 color: '#cbd5e1',
-                fontSize: '0.85rem',
+                fontSize: isSmallMobile ? '0.75rem' : '0.85rem',
                 fontWeight: '500',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem'
+                gap: '0.5rem',
+                minHeight: '44px',
+                minWidth: '44px'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(6, 182, 212, 0.1)';
@@ -274,18 +298,20 @@ const MainScreen = () => {
             <button
               onClick={handleLogout}
               style={{
-                padding: '0.6rem 1.25rem',
+                padding: isSmallMobile ? '0.5rem 0.75rem' : '0.6rem 1.25rem',
                 background: 'rgba(239, 68, 68, 0.1)',
                 border: '1px solid rgba(239, 68, 68, 0.2)',
                 borderRadius: '10px',
                 color: '#f87171',
-                fontSize: '0.85rem',
+                fontSize: isSmallMobile ? '0.75rem' : '0.85rem',
                 fontWeight: '500',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem'
+                gap: '0.5rem',
+                minHeight: '44px',
+                minWidth: '44px'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
@@ -305,27 +331,28 @@ const MainScreen = () => {
 
       {/* Main Content */}
       <main style={{
-        padding: '1.5rem',
+        padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '1.5rem',
         position: 'relative',
         zIndex: 1,
-        height: 'calc(100vh - 72px)',
-        overflowY: 'auto'
+        height: isMobile ? 'auto' : 'calc(100vh - 72px)',
+        overflowY: isMobile ? 'visible' : 'auto'
       }}>
         <div style={{
           maxWidth: '1400px',
           margin: '0 auto',
-          height: '100%',
+          height: isMobile ? 'auto' : '100%',
           display: 'flex',
           flexDirection: 'column'
         }}>
           {/* Personalized Welcome Section */}
           <div style={{
             textAlign: 'center',
-            marginBottom: '2rem',
-            animation: 'fadeIn 0.8s ease'
+            marginBottom: isSmallMobile ? '1.5rem' : isMobile ? '2rem' : '2rem',
+            animation: 'fadeIn 0.8s ease',
+            padding: isSmallMobile ? '0 1rem' : '0'
           }}>
             <h1 style={{
-              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontSize: isSmallMobile ? '1.75rem' : isMobile ? '2.2rem' : 'clamp(2rem, 4vw, 3rem)',
               fontWeight: '800',
               lineHeight: '1.2',
               marginBottom: '0.5rem',
@@ -345,7 +372,7 @@ const MainScreen = () => {
               </span>
             </h1>
             <p style={{
-              fontSize: '1rem',
+              fontSize: isSmallMobile ? '0.9rem' : isMobile ? '1rem' : '1rem',
               color: 'rgba(255, 255, 255, 0.6)',
               maxWidth: '500px',
               margin: '0 auto',
@@ -355,13 +382,15 @@ const MainScreen = () => {
             </p>
           </div>
 
-          {/* Cards Grid - 3 Per Row */}
+          {/* Cards Grid - Responsive */}
           <div style={{
-            flex: 1,
+            flex: isMobile ? '0 1 auto' : 1,
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 370px)',
-            gap: '1.75rem',
-            padding: '0.5rem',
+            gridTemplateColumns: isSmallMobile ? '1fr' :
+              isMobile ? 'repeat(2, 1fr)' :
+                'repeat(3, 370px)',
+            gap: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '1.75rem',
+            padding: isSmallMobile ? '0.25rem' : '0.5rem',
             alignContent: 'start',
             justifyContent: 'center'
           }}>
@@ -372,7 +401,7 @@ const MainScreen = () => {
                 style={{
                   background: 'rgba(20, 20, 20, 0.8)',
                   backdropFilter: 'blur(20px)',
-                  padding: '2.25rem 2rem',
+                  padding: isSmallMobile ? '1.5rem 1.25rem' : isMobile ? '1.75rem 1.5rem' : '2.25rem 2rem',
                   borderRadius: '20px',
                   border: `1px solid ${hoveredCard === card.id ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
                   cursor: 'pointer',
@@ -385,7 +414,7 @@ const MainScreen = () => {
                     ? `0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px ${card.color}40`
                     : '0 10px 25px rgba(0, 0, 0, 0.3)',
                   transform: hoveredCard === card.id ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
-                  height: '320px',
+                  height: isSmallMobile ? '250px' : isMobile ? '280px' : '320px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
@@ -408,15 +437,15 @@ const MainScreen = () => {
                 <div>
                   {/* Icon */}
                   <div style={{
-                    width: '70px',
-                    height: '70px',
+                    width: isSmallMobile ? '60px' : isMobile ? '65px' : '70px',
+                    height: isSmallMobile ? '60px' : isMobile ? '65px' : '70px',
                     background: card.gradient,
                     borderRadius: '18px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     margin: '0 auto 1.5rem',
-                    fontSize: '2rem',
+                    fontSize: isSmallMobile ? '1.8rem' : isMobile ? '2rem' : '2rem',
                     transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     boxShadow: `0 12px 28px ${card.color}40`,
                     transform: hoveredCard === card.id ? 'scale(1.1) translateY(-8px)' : 'scale(1)'
@@ -426,7 +455,7 @@ const MainScreen = () => {
 
                   {/* Title */}
                   <h3 style={{
-                    fontSize: '1.5rem',
+                    fontSize: isSmallMobile ? '1.3rem' : isMobile ? '1.4rem' : '1.5rem',
                     fontWeight: '700',
                     color: 'white',
                     marginBottom: '0.75rem',
@@ -440,7 +469,7 @@ const MainScreen = () => {
                   {/* Description */}
                   <p style={{
                     color: hoveredCard === card.id ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.5)',
-                    fontSize: '0.95rem',
+                    fontSize: isSmallMobile ? '0.9rem' : isMobile ? '0.95rem' : '0.95rem',
                     lineHeight: '1.6',
                     marginBottom: '0',
                     padding: '0 0.5rem',
@@ -456,17 +485,19 @@ const MainScreen = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.6rem',
-                  padding: '0.8rem 1.6rem',
+                  padding: isSmallMobile ? '0.7rem 1.2rem' : '0.8rem 1.6rem',
                   background: hoveredCard === card.id ? `${card.color}20` : 'rgba(255, 255, 255, 0.05)',
                   borderRadius: '12px',
                   border: `2px solid ${hoveredCard === card.id ? card.color : 'rgba(255, 255, 255, 0.1)'}`,
-                  fontSize: '0.95rem',
+                  fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                   color: hoveredCard === card.id ? card.color : 'rgba(255, 255, 255, 0.7)',
                   fontWeight: '600',
                   transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   transform: hoveredCard === card.id ? 'scale(1.08) translateY(-4px)' : 'scale(1)',
                   margin: '0 auto',
-                  boxShadow: hoveredCard === card.id ? `0 4px 12px ${card.color}25` : 'none'
+                  boxShadow: hoveredCard === card.id ? `0 4px 12px ${card.color}25` : 'none',
+                  minHeight: '44px',
+                  minWidth: '44px'
                 }}>
                   <span style={{
                     fontSize: '1rem',
@@ -492,14 +523,14 @@ const MainScreen = () => {
 
           {/* Enhanced Footer */}
           <div style={{
-            marginTop: '2.5rem',
-            padding: '1.5rem',
+            marginTop: isSmallMobile ? '2rem' : isMobile ? '2.5rem' : '2.5rem',
+            padding: isSmallMobile ? '1rem' : '1.5rem',
             textAlign: 'center',
             position: 'relative'
           }}>
             {/* Decorative Line */}
             <div style={{
-              width: '200px',
+              width: isSmallMobile ? '150px' : '200px',
               height: '1px',
               background: 'linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.5), transparent)',
               margin: '0 auto 1.5rem'
@@ -509,8 +540,8 @@ const MainScreen = () => {
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.75rem 1.5rem',
+              gap: isSmallMobile ? '0.5rem' : '0.75rem',
+              padding: isSmallMobile ? '0.5rem 1rem' : '0.75rem 1.5rem',
               background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(10px)',
               borderRadius: '12px',
@@ -526,7 +557,7 @@ const MainScreen = () => {
               }} />
 
               <span style={{
-                fontSize: '0.85rem',
+                fontSize: isSmallMobile ? '0.75rem' : '0.85rem',
                 fontWeight: '500',
                 background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5))',
                 WebkitBackgroundClip: 'text',
@@ -537,7 +568,7 @@ const MainScreen = () => {
               </span>
 
               <span style={{
-                fontSize: '0.85rem',
+                fontSize: isSmallMobile ? '0.75rem' : '0.85rem',
                 color: 'rgba(255, 255, 255, 0.4)',
                 fontWeight: '400'
               }}>
@@ -556,7 +587,7 @@ const MainScreen = () => {
             {/* Small Tagline */}
             <p style={{
               marginTop: '0.75rem',
-              fontSize: '0.75rem',
+              fontSize: isSmallMobile ? '0.7rem' : '0.75rem',
               color: 'rgba(255, 255, 255, 0.2)',
               letterSpacing: '0.05em'
             }}>
