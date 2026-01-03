@@ -4,11 +4,27 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const HomeScreen = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeButton, setActiveButton] = useState(null); // Start with null to show only welcome
+  const [activeButton, setActiveButton] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [filter, setFilter] = useState('all'); // 'all', 'pending', 'in-progress', 'answered'
+  const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Responsive state
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSmallMobile, setIsSmallMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsSmallMobile(window.innerWidth <= 480);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Get data from MainScreen navigation state
   const studentData = location.state?.studentData || {
@@ -662,8 +678,6 @@ const HomeScreen = () => {
       responses: []
     };
 
-    // In real app, you would send this to backend
-    // For demo, we'll just show a success message
     alert('Request submitted successfully! Your lecture request has been sent for approval.');
 
     // Reset form
@@ -712,7 +726,6 @@ const HomeScreen = () => {
 
   const handleTeacherChat = (teacher) => {
     alert(`Opening chat with ${teacher.name}...\n\nSubject: ${teacher.subject}\nQualification: ${teacher.qualification}\n\nIn a real application, this would open a chat interface.`);
-    // Here you would implement actual chat functionality
     console.log('Starting chat with:', teacher);
   };
 
@@ -730,8 +743,8 @@ const HomeScreen = () => {
         justifyContent: 'center'
       }}>
         <div style={{
-          width: '60px',
-          height: '60px',
+          width: isSmallMobile ? '40px' : '60px',
+          height: isSmallMobile ? '40px' : '60px',
           border: '4px solid rgba(6, 182, 212, 0.3)',
           borderTop: '4px solid #06b6d4',
           borderRadius: '50%',
@@ -788,7 +801,7 @@ const HomeScreen = () => {
 
       {/* Header */}
       <header style={{
-        padding: '1.5rem 3rem',
+        padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '1.5rem 3rem',
         background: 'rgba(10, 10, 10, 0.95)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
@@ -801,13 +814,17 @@ const HomeScreen = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           maxWidth: '1600px',
-          margin: '0 auto'
+          margin: '0 auto',
+          flexDirection: isSmallMobile ? 'column' : 'row',
+          gap: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '0'
         }}>
           {/* Left - Back Button and Brand */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '1.5rem'
+            gap: isSmallMobile ? '1rem' : '1.5rem',
+            flexDirection: isSmallMobile ? 'column' : 'row',
+            width: isSmallMobile ? '100%' : 'auto'
           }}>
             <button
               onClick={handleBackToMain}
@@ -815,15 +832,19 @@ const HomeScreen = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                padding: '0.75rem 1.5rem',
+                padding: isSmallMobile ? '0.6rem 1rem' : isMobile ? '0.75rem 1.25rem' : '0.75rem 1.5rem',
                 background: 'rgba(6, 182, 212, 0.1)',
                 border: '1px solid rgba(6, 182, 212, 0.3)',
                 borderRadius: '12px',
                 color: '#67e8f9',
-                fontSize: '0.95rem',
+                fontSize: isSmallMobile ? '0.85rem' : '0.95rem',
                 fontWeight: '600',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                minHeight: '44px',
+                minWidth: '44px',
+                width: isSmallMobile ? '100%' : 'auto',
+                justifyContent: 'center'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(6, 182, 212, 0.2)';
@@ -836,7 +857,7 @@ const HomeScreen = () => {
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              <span style={{ fontSize: '1.2rem' }}>←</span>
+              <span style={{ fontSize: isSmallMobile ? '1rem' : '1.2rem' }}>←</span>
               Back to Subjects
             </button>
 
@@ -844,16 +865,18 @@ const HomeScreen = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.75rem',
-              padding: '0.75rem 1.5rem',
+              padding: isSmallMobile ? '0.6rem 1rem' : isMobile ? '0.75rem 1.25rem' : '0.75rem 1.5rem',
               background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.2))',
               border: '1px solid rgba(6, 182, 212, 0.3)',
               borderRadius: '12px',
-              fontSize: '1rem',
+              fontSize: isSmallMobile ? '0.9rem' : '1rem',
               fontWeight: '600',
               color: '#67e8f9',
-              boxShadow: '0 4px 15px rgba(6, 182, 212, 0.2)'
+              boxShadow: '0 4px 15px rgba(6, 182, 212, 0.2)',
+              width: isSmallMobile ? '100%' : 'auto',
+              justifyContent: 'center'
             }}>
-              <span style={{ fontSize: '1.3rem' }}>📚</span>
+              <span style={{ fontSize: isSmallMobile ? '1.1rem' : '1.3rem' }}>📚</span>
               <span>StudyHive</span>
             </div>
           </div>
@@ -862,35 +885,38 @@ const HomeScreen = () => {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '1rem',
-            padding: '0.75rem 2rem',
+            gap: isSmallMobile ? '0.75rem' : '1rem',
+            padding: isSmallMobile ? '0.6rem 1rem' : isMobile ? '0.75rem 1.25rem' : '0.75rem 2rem',
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '12px',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            width: isSmallMobile ? '100%' : 'auto',
+            justifyContent: 'center',
+            margin: isSmallMobile ? '0.5rem 0' : '0'
           }}>
             <div style={{
-              width: '45px',
-              height: '45px',
+              width: isSmallMobile ? '35px' : isMobile ? '40px' : '45px',
+              height: isSmallMobile ? '35px' : isMobile ? '40px' : '45px',
               background: subjectData.gradient,
               borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.5rem',
+              fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.5rem',
               boxShadow: `0 6px 15px ${subjectData.color}40`
             }}>
               {subjectData.icon}
             </div>
             <div>
               <div style={{
-                fontSize: '1.1rem',
+                fontSize: isSmallMobile ? '0.95rem' : isMobile ? '1rem' : '1.1rem',
                 fontWeight: '700',
                 color: 'white'
               }}>
                 {subjectData.title}
               </div>
               <div style={{
-                fontSize: '0.85rem',
+                fontSize: isSmallMobile ? '0.75rem' : isMobile ? '0.8rem' : '0.85rem',
                 color: 'rgba(255, 255, 255, 0.6)'
               }}>
                 {subjectData.description}
@@ -900,24 +926,26 @@ const HomeScreen = () => {
 
           {/* Right - User Info */}
           <div style={{
-            padding: '0.75rem 1.5rem',
+            padding: isSmallMobile ? '0.6rem 1rem' : isMobile ? '0.75rem 1.25rem' : '0.75rem 1.5rem',
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '12px',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            fontSize: '0.9rem',
+            fontSize: isSmallMobile ? '0.8rem' : isMobile ? '0.85rem' : '0.9rem',
             display: 'flex',
-            gap: '0.75rem',
-            alignItems: 'center'
+            gap: isSmallMobile ? '0.5rem' : '0.75rem',
+            alignItems: 'center',
+            width: isSmallMobile ? '100%' : 'auto',
+            justifyContent: 'center'
           }}>
             <div style={{
-              width: '40px',
-              height: '40px',
+              width: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
+              height: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
               background: subjectData.gradient,
               borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.2rem',
+              fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem',
               fontWeight: '600',
               color: 'white'
             }}>
@@ -927,13 +955,13 @@ const HomeScreen = () => {
               <div style={{
                 color: '#67e8f9',
                 fontWeight: '600',
-                fontSize: '0.95rem'
+                fontSize: isSmallMobile ? '0.85rem' : isMobile ? '0.9rem' : '0.95rem'
               }}>
                 {studentData.name}
               </div>
               <div style={{
                 color: 'rgba(255, 255, 255, 0.6)',
-                fontSize: '0.85rem'
+                fontSize: isSmallMobile ? '0.75rem' : isMobile ? '0.8rem' : '0.85rem'
               }}>
                 {studentData.rollNo}
               </div>
@@ -944,16 +972,18 @@ const HomeScreen = () => {
         {/* Navigation Buttons - Centered */}
         <div style={{
           maxWidth: '1600px',
-          margin: '2rem auto 0',
+          margin: isSmallMobile ? '1.5rem auto 0' : isMobile ? '1.75rem auto 0' : '2rem auto 0',
           display: 'flex',
           justifyContent: 'center',
-          gap: '2rem'
+          gap: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '2rem',
+          flexDirection: isSmallMobile ? 'column' : 'row',
+          alignItems: 'center'
         }}>
           {/* Home Page Button */}
           <button
             onClick={() => handleButtonClick('homepage')}
             style={{
-              padding: '1rem 2.5rem',
+              padding: isSmallMobile ? '0.9rem 1.5rem' : isMobile ? '1rem 2rem' : '1rem 2.5rem',
               background: activeButton === 'homepage'
                 ? `linear-gradient(135deg, ${subjectData.color}, ${subjectData.color}90)`
                 : 'rgba(255, 255, 255, 0.05)',
@@ -970,7 +1000,11 @@ const HomeScreen = () => {
               boxShadow: activeButton === 'homepage'
                 ? `0 8px 25px ${subjectData.color}60`
                 : 'none',
-              transform: activeButton === 'homepage' ? 'translateY(-2px)' : 'translateY(0)'
+              transform: activeButton === 'homepage' ? 'translateY(-2px)' : 'translateY(0)',
+              minHeight: '44px',
+              minWidth: '44px',
+              width: isSmallMobile ? '100%' : 'auto',
+              justifyContent: 'center'
             }}
             onMouseEnter={(e) => {
               if (activeButton !== 'homepage') {
@@ -988,12 +1022,12 @@ const HomeScreen = () => {
             }}
           >
             <span style={{
-              fontSize: '1.4rem'
+              fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.4rem'
             }}>
               🏠
             </span>
             <span style={{
-              fontSize: '1rem',
+              fontSize: isSmallMobile ? '0.9rem' : isMobile ? '0.95rem' : '1rem',
               fontWeight: '600',
               color: activeButton === 'homepage' ? 'white' : 'white',
             }}>
@@ -1005,7 +1039,7 @@ const HomeScreen = () => {
           <button
             onClick={() => handleButtonClick('ask-lecture')}
             style={{
-              padding: '1rem 2.5rem',
+              padding: isSmallMobile ? '0.9rem 1.5rem' : isMobile ? '1rem 2rem' : '1rem 2.5rem',
               background: activeButton === 'ask-lecture'
                 ? `linear-gradient(135deg, ${subjectData.color}, ${subjectData.color}90)`
                 : 'rgba(255, 255, 255, 0.05)',
@@ -1022,7 +1056,11 @@ const HomeScreen = () => {
               boxShadow: activeButton === 'ask-lecture'
                 ? `0 8px 25px ${subjectData.color}60`
                 : 'none',
-              transform: activeButton === 'ask-lecture' ? 'translateY(-2px)' : 'translateY(0)'
+              transform: activeButton === 'ask-lecture' ? 'translateY(-2px)' : 'translateY(0)',
+              minHeight: '44px',
+              minWidth: '44px',
+              width: isSmallMobile ? '100%' : 'auto',
+              justifyContent: 'center'
             }}
             onMouseEnter={(e) => {
               if (activeButton !== 'ask-lecture') {
@@ -1040,12 +1078,12 @@ const HomeScreen = () => {
             }}
           >
             <span style={{
-              fontSize: '1.4rem'
+              fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.4rem'
             }}>
               🎓
             </span>
             <span style={{
-              fontSize: '1rem',
+              fontSize: isSmallMobile ? '0.9rem' : isMobile ? '0.95rem' : '1rem',
               fontWeight: '600',
               color: activeButton === 'ask-lecture' ? 'white' : 'white',
             }}>
@@ -1057,7 +1095,7 @@ const HomeScreen = () => {
           <button
             onClick={() => handleButtonClick('query-center')}
             style={{
-              padding: '1rem 2.5rem',
+              padding: isSmallMobile ? '0.9rem 1.5rem' : isMobile ? '1rem 2rem' : '1rem 2.5rem',
               background: activeButton === 'query-center'
                 ? `linear-gradient(135deg, ${subjectData.color}, ${subjectData.color}90)`
                 : 'rgba(255, 255, 255, 0.05)',
@@ -1074,7 +1112,11 @@ const HomeScreen = () => {
               boxShadow: activeButton === 'query-center'
                 ? `0 8px 25px ${subjectData.color}60`
                 : 'none',
-              transform: activeButton === 'query-center' ? 'translateY(-2px)' : 'translateY(0)'
+              transform: activeButton === 'query-center' ? 'translateY(-2px)' : 'translateY(0)',
+              minHeight: '44px',
+              minWidth: '44px',
+              width: isSmallMobile ? '100%' : 'auto',
+              justifyContent: 'center'
             }}
             onMouseEnter={(e) => {
               if (activeButton !== 'query-center') {
@@ -1092,12 +1134,12 @@ const HomeScreen = () => {
             }}
           >
             <span style={{
-              fontSize: '1.4rem'
+              fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.4rem'
             }}>
               ❓
             </span>
             <span style={{
-              fontSize: '1rem',
+              fontSize: isSmallMobile ? '0.9rem' : isMobile ? '0.95rem' : '1rem',
               fontWeight: '600',
               color: activeButton === 'query-center' ? 'white' : 'white',
             }}>
@@ -1109,7 +1151,7 @@ const HomeScreen = () => {
 
       {/* Main Content */}
       <main style={{
-        padding: '3rem',
+        padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '3rem',
         position: 'relative',
         zIndex: 1,
         minHeight: 'calc(100vh - 220px)',
@@ -1129,17 +1171,18 @@ const HomeScreen = () => {
               alignItems: 'center',
               justifyContent: 'center',
               textAlign: 'center',
-              animation: 'fadeIn 0.8s ease'
+              animation: 'fadeIn 0.8s ease',
+              padding: isSmallMobile ? '1rem' : '0'
             }}>
               <div style={{
-                width: '180px',
-                height: '180px',
+                width: isSmallMobile ? '120px' : isMobile ? '150px' : '180px',
+                height: isSmallMobile ? '120px' : isMobile ? '150px' : '180px',
                 background: subjectData.gradient,
-                borderRadius: '40px',
+                borderRadius: isSmallMobile ? '30px' : '40px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '6rem',
+                fontSize: isSmallMobile ? '4rem' : isMobile ? '5rem' : '6rem',
                 margin: '0 auto 3rem',
                 boxShadow: `0 30px 60px ${subjectData.color}40`,
                 animation: 'fadeIn 0.8s ease'
@@ -1148,11 +1191,12 @@ const HomeScreen = () => {
               </div>
 
               <h1 style={{
-                fontSize: '4rem',
+                fontSize: isSmallMobile ? '2rem' : isMobile ? '2.8rem' : '4rem',
                 fontWeight: '800',
                 color: 'white',
-                marginBottom: '1.5rem',
-                lineHeight: '1.2'
+                marginBottom: isSmallMobile ? '1rem' : '1.5rem',
+                lineHeight: '1.2',
+                padding: isSmallMobile ? '0 1rem' : '0'
               }}>
                 Welcome to{' '}
                 <span style={{
@@ -1168,14 +1212,14 @@ const HomeScreen = () => {
               </h1>
 
               <p style={{
-                fontSize: '1.5rem',
+                fontSize: isSmallMobile ? '1rem' : isMobile ? '1.2rem' : '1.5rem',
                 color: 'rgba(255, 255, 255, 0.8)',
                 lineHeight: '1.6',
-                marginBottom: '3rem',
+                marginBottom: isSmallMobile ? '2rem' : '3rem',
                 maxWidth: '900px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                padding: '0 2rem'
+                padding: isSmallMobile ? '0' : '0 2rem'
               }}>
                 {subjectData.description}. Click on <strong style={{ color: subjectData.color }}>"Home Page"</strong> to view requests,
                 <strong style={{ color: subjectData.color }}> "Ask a Lecture"</strong> to request new lectures, or
@@ -1183,8 +1227,8 @@ const HomeScreen = () => {
               </p>
 
               <div style={{
-                marginTop: '3rem',
-                fontSize: '1.1rem',
+                marginTop: isSmallMobile ? '2rem' : '3rem',
+                fontSize: isSmallMobile ? '0.9rem' : isMobile ? '1rem' : '1.1rem',
                 color: 'rgba(255, 255, 255, 0.6)',
                 display: 'flex',
                 alignItems: 'center',
@@ -1213,17 +1257,19 @@ const HomeScreen = () => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '2rem',
-                padding: '1.5rem',
+                marginBottom: isSmallMobile ? '1.5rem' : '2rem',
+                padding: isSmallMobile ? '1rem' : isMobile ? '1.25rem' : '1.5rem',
                 background: 'rgba(20, 20, 20, 0.8)',
                 backdropFilter: 'blur(10px)',
-                borderRadius: '18px',
+                borderRadius: isSmallMobile ? '15px' : '18px',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                flexDirection: isSmallMobile ? 'column' : 'row',
+                gap: isSmallMobile ? '1rem' : '0'
               }}>
                 <div>
                   <h2 style={{
-                    fontSize: '1.8rem',
+                    fontSize: isSmallMobile ? '1.4rem' : isMobile ? '1.6rem' : '1.8rem',
                     fontWeight: '700',
                     color: 'white',
                     margin: 0,
@@ -1232,21 +1278,21 @@ const HomeScreen = () => {
                     gap: '0.75rem'
                   }}>
                     <span style={{
-                      width: '45px',
-                      height: '45px',
+                      width: isSmallMobile ? '35px' : isMobile ? '40px' : '45px',
+                      height: isSmallMobile ? '35px' : isMobile ? '40px' : '45px',
                       background: subjectData.gradient,
-                      borderRadius: '12px',
+                      borderRadius: isSmallMobile ? '10px' : '12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.5rem'
+                      fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.5rem'
                     }}>
                       💬
                     </span>
                     Recent Requests & Questions
                   </h2>
                   <p style={{
-                    fontSize: '0.95rem',
+                    fontSize: isSmallMobile ? '0.85rem' : isMobile ? '0.9rem' : '0.95rem',
                     color: 'rgba(255, 255, 255, 0.6)',
                     margin: '0.5rem 0 0 0'
                   }}>
@@ -1256,12 +1302,15 @@ const HomeScreen = () => {
 
                 <div style={{
                   display: 'flex',
-                  gap: '1rem',
-                  alignItems: 'center'
+                  gap: isSmallMobile ? '1rem' : '1rem',
+                  alignItems: 'center',
+                  width: isSmallMobile ? '100%' : 'auto',
+                  flexDirection: isSmallMobile ? 'column' : 'row'
                 }}>
                   {/* Search Bar */}
                   <div style={{
-                    position: 'relative'
+                    position: 'relative',
+                    width: isSmallMobile ? '100%' : '250px'
                   }}>
                     <input
                       type="text"
@@ -1269,13 +1318,13 @@ const HomeScreen = () => {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       style={{
-                        padding: '0.75rem 1rem 0.75rem 2.5rem',
+                        padding: isSmallMobile ? '0.6rem 1rem 0.6rem 2.5rem' : '0.75rem 1rem 0.75rem 2.5rem',
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '10px',
                         color: 'white',
-                        fontSize: '0.95rem',
-                        width: '250px',
+                        fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
+                        width: '100%',
                         outline: 'none',
                         transition: 'all 0.3s ease'
                       }}
@@ -1293,7 +1342,7 @@ const HomeScreen = () => {
                       left: '0.75rem',
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      fontSize: '1rem',
+                      fontSize: isSmallMobile ? '0.9rem' : '1rem',
                       color: 'rgba(255, 255, 255, 0.5)'
                     }}>
                       🔍
@@ -1307,23 +1356,27 @@ const HomeScreen = () => {
                     background: 'rgba(255, 255, 255, 0.05)',
                     padding: '0.25rem',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    width: isSmallMobile ? '100%' : 'auto',
+                    overflowX: isSmallMobile ? 'auto' : 'visible'
                   }}>
                     <button
                       onClick={() => handleFilterClick('all')}
                       style={{
-                        padding: '0.5rem 1rem',
+                        padding: isSmallMobile ? '0.4rem 0.75rem' : '0.5rem 1rem',
                         background: filter === 'all' ? subjectData.color : 'transparent',
                         border: 'none',
                         borderRadius: '8px',
                         color: filter === 'all' ? 'white' : 'rgba(255, 255, 255, 0.7)',
-                        fontSize: '0.9rem',
+                        fontSize: isSmallMobile ? '0.8rem' : '0.9rem',
                         fontWeight: '600',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        minHeight: '44px',
+                        minWidth: '44px'
                       }}
                     >
                       <span>All</span>
@@ -1340,18 +1393,20 @@ const HomeScreen = () => {
                     <button
                       onClick={() => handleFilterClick('pending')}
                       style={{
-                        padding: '0.5rem 1rem',
+                        padding: isSmallMobile ? '0.4rem 0.75rem' : '0.5rem 1rem',
                         background: filter === 'pending' ? '#ef4444' : 'transparent',
                         border: 'none',
                         borderRadius: '8px',
                         color: filter === 'pending' ? 'white' : '#ef4444',
-                        fontSize: '0.9rem',
+                        fontSize: isSmallMobile ? '0.8rem' : '0.9rem',
                         fontWeight: '600',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        minHeight: '44px',
+                        minWidth: '44px'
                       }}
                     >
                       <span>Pending</span>
@@ -1369,18 +1424,20 @@ const HomeScreen = () => {
                     <button
                       onClick={() => handleFilterClick('in-progress')}
                       style={{
-                        padding: '0.5rem 1rem',
+                        padding: isSmallMobile ? '0.4rem 0.75rem' : '0.5rem 1rem',
                         background: filter === 'in-progress' ? '#f59e0b' : 'transparent',
                         border: 'none',
                         borderRadius: '8px',
                         color: filter === 'in-progress' ? 'white' : '#f59e0b',
-                        fontSize: '0.9rem',
+                        fontSize: isSmallMobile ? '0.8rem' : '0.9rem',
                         fontWeight: '600',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        minHeight: '44px',
+                        minWidth: '44px'
                       }}
                     >
                       <span>Running</span>
@@ -1398,18 +1455,20 @@ const HomeScreen = () => {
                     <button
                       onClick={() => handleFilterClick('answered')}
                       style={{
-                        padding: '0.5rem 1rem',
+                        padding: isSmallMobile ? '0.4rem 0.75rem' : '0.5rem 1rem',
                         background: filter === 'answered' ? '#10b981' : 'transparent',
                         border: 'none',
                         borderRadius: '8px',
                         color: filter === 'answered' ? 'white' : '#10b981',
-                        fontSize: '0.9rem',
+                        fontSize: isSmallMobile ? '0.8rem' : '0.9rem',
                         fontWeight: '600',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        minHeight: '44px',
+                        minWidth: '44px'
                       }}
                     >
                       <span>Answered</span>
@@ -1431,8 +1490,10 @@ const HomeScreen = () => {
               {filteredRequests.length > 0 ? (
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))',
-                  gap: '2rem',
+                  gridTemplateColumns: isSmallMobile ? '1fr' :
+                    isMobile ? 'repeat(auto-fill, minmax(350px, 1fr))' :
+                      'repeat(auto-fill, minmax(450px, 1fr))',
+                  gap: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '2rem',
                   marginTop: '1rem'
                 }}>
                   {filteredRequests.map((request) => (
@@ -1442,9 +1503,9 @@ const HomeScreen = () => {
                       style={{
                         background: 'rgba(20, 20, 20, 0.8)',
                         backdropFilter: 'blur(10px)',
-                        borderRadius: '18px',
+                        borderRadius: isSmallMobile ? '15px' : '18px',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
-                        padding: '1.75rem',
+                        padding: isSmallMobile ? '1.25rem' : isMobile ? '1.5rem' : '1.75rem',
                         transition: 'all 0.3s ease',
                         cursor: 'pointer',
                         boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
@@ -1468,18 +1529,18 @@ const HomeScreen = () => {
                       <div style={{
                         display: 'flex',
                         alignItems: 'flex-start',
-                        gap: '1rem',
-                        marginBottom: '1.25rem'
+                        gap: isSmallMobile ? '0.75rem' : '1rem',
+                        marginBottom: isSmallMobile ? '1rem' : '1.25rem'
                       }}>
                         <div style={{
-                          width: '60px',
-                          height: '60px',
+                          width: isSmallMobile ? '50px' : isMobile ? '55px' : '60px',
+                          height: isSmallMobile ? '50px' : isMobile ? '55px' : '60px',
                           background: subjectData.gradient,
-                          borderRadius: '15px',
+                          borderRadius: isSmallMobile ? '12px' : '15px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '1.8rem',
+                          fontSize: isSmallMobile ? '1.5rem' : isMobile ? '1.6rem' : '1.8rem',
                           flexShrink: 0,
                           boxShadow: `0 8px 20px ${subjectData.color}40`
                         }}>
@@ -1490,11 +1551,13 @@ const HomeScreen = () => {
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'flex-start',
-                            marginBottom: '0.5rem'
+                            marginBottom: '0.5rem',
+                            flexDirection: isSmallMobile ? 'column' : 'row',
+                            gap: isSmallMobile ? '0.5rem' : '0'
                           }}>
                             <div>
                               <h3 style={{
-                                fontSize: '1.3rem',
+                                fontSize: isSmallMobile ? '1.1rem' : isMobile ? '1.2rem' : '1.3rem',
                                 fontWeight: '700',
                                 color: 'white',
                                 margin: '0 0 0.25rem 0',
@@ -1505,18 +1568,19 @@ const HomeScreen = () => {
                               <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '1rem',
-                                marginBottom: '0.5rem'
+                                gap: isSmallMobile ? '0.75rem' : '1rem',
+                                marginBottom: '0.5rem',
+                                flexWrap: 'wrap'
                               }}>
                                 <span style={{
-                                  fontSize: '1rem',
+                                  fontSize: isSmallMobile ? '0.9rem' : '1rem',
                                   fontWeight: '600',
                                   color: subjectData.color
                                 }}>
                                   {request.name}
                                 </span>
                                 <span style={{
-                                  fontSize: '0.9rem',
+                                  fontSize: isSmallMobile ? '0.8rem' : '0.9rem',
                                   color: 'rgba(255, 255, 255, 0.5)'
                                 }}>
                                   {request.rollNo}
@@ -1526,12 +1590,12 @@ const HomeScreen = () => {
                             <div style={{
                               display: 'flex',
                               flexDirection: 'column',
-                              alignItems: 'flex-end',
+                              alignItems: isSmallMobile ? 'flex-start' : 'flex-end',
                               gap: '0.5rem'
                             }}>
                               <span style={{
-                                fontSize: '0.85rem',
-                                padding: '0.35rem 1rem',
+                                fontSize: isSmallMobile ? '0.75rem' : '0.85rem',
+                                padding: isSmallMobile ? '0.3rem 0.75rem' : '0.35rem 1rem',
                                 background: `rgba(${getStatusColor(request.status)}${request.status === 'answered' ? '0.2' : '0.15'})`,
                                 color: getStatusColor(request.status),
                                 borderRadius: '20px',
@@ -1541,7 +1605,7 @@ const HomeScreen = () => {
                                 {getStatusText(request.status)}
                               </span>
                               <span style={{
-                                fontSize: '0.8rem',
+                                fontSize: isSmallMobile ? '0.75rem' : '0.8rem',
                                 color: 'rgba(255, 255, 255, 0.4)'
                               }}>
                                 {request.time}
@@ -1550,7 +1614,7 @@ const HomeScreen = () => {
                           </div>
 
                           <p style={{
-                            fontSize: '1rem',
+                            fontSize: isSmallMobile ? '0.9rem' : '1rem',
                             color: 'rgba(255, 255, 255, 0.7)',
                             margin: '0 0 1rem 0',
                             lineHeight: '1.5',
@@ -1564,10 +1628,12 @@ const HomeScreen = () => {
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             paddingTop: '1rem',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.05)'
+                            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                            flexDirection: isSmallMobile ? 'column' : 'row',
+                            gap: isSmallMobile ? '0.75rem' : '0'
                           }}>
                             <span style={{
-                              fontSize: '0.9rem',
+                              fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                               color: 'rgba(255, 255, 255, 0.4)',
                               display: 'flex',
                               alignItems: 'center',
@@ -1582,7 +1648,7 @@ const HomeScreen = () => {
                               {request.type}
                             </span>
                             <span style={{
-                              fontSize: '0.9rem',
+                              fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                               color: subjectData.color,
                               display: 'flex',
                               alignItems: 'center',
@@ -1600,20 +1666,20 @@ const HomeScreen = () => {
               ) : (
                 <div style={{
                   textAlign: 'center',
-                  padding: '4rem 2rem',
+                  padding: isSmallMobile ? '3rem 1.5rem' : isMobile ? '3.5rem 2rem' : '4rem 2rem',
                   background: 'rgba(20, 20, 20, 0.8)',
-                  borderRadius: '18px',
+                  borderRadius: isSmallMobile ? '15px' : '18px',
                   border: '1px solid rgba(255, 255, 255, 0.1)'
                 }}>
                   <div style={{
-                    fontSize: '4rem',
-                    marginBottom: '1.5rem',
+                    fontSize: isSmallMobile ? '3rem' : isMobile ? '3.5rem' : '4rem',
+                    marginBottom: isSmallMobile ? '1rem' : '1.5rem',
                     opacity: 0.5
                   }}>
                     🔍
                   </div>
                   <h3 style={{
-                    fontSize: '1.5rem',
+                    fontSize: isSmallMobile ? '1.3rem' : isMobile ? '1.4rem' : '1.5rem',
                     fontWeight: '600',
                     color: 'white',
                     marginBottom: '0.5rem'
@@ -1621,7 +1687,7 @@ const HomeScreen = () => {
                     No requests found
                   </h3>
                   <p style={{
-                    fontSize: '1rem',
+                    fontSize: isSmallMobile ? '0.9rem' : '1rem',
                     color: 'rgba(255, 255, 255, 0.6)'
                   }}>
                     {searchQuery ? `No results for "${searchQuery}"` : `No requests in ${filter} category`}
@@ -1634,15 +1700,17 @@ const HomeScreen = () => {
                       }}
                       style={{
                         marginTop: '1.5rem',
-                        padding: '0.75rem 1.5rem',
+                        padding: isSmallMobile ? '0.6rem 1.25rem' : isMobile ? '0.75rem 1.5rem' : '0.75rem 1.5rem',
                         background: subjectData.gradient,
                         border: 'none',
                         borderRadius: '10px',
                         color: 'white',
-                        fontSize: '0.95rem',
+                        fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                         fontWeight: '600',
                         cursor: 'pointer',
-                        transition: 'all 0.3s ease'
+                        transition: 'all 0.3s ease',
+                        minHeight: '44px',
+                        minWidth: '44px'
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-2px)';
@@ -1669,8 +1737,10 @@ const HomeScreen = () => {
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '1.5rem',
-                marginBottom: '2.5rem'
+                gap: isSmallMobile ? '1rem' : '1.5rem',
+                marginBottom: isSmallMobile ? '2rem' : '2.5rem',
+                flexDirection: isSmallMobile ? 'column' : 'row',
+                alignItems: isSmallMobile ? 'flex-start' : 'center'
               }}>
                 <button
                   onClick={() => setSelectedRequest(null)}
@@ -1678,15 +1748,17 @@ const HomeScreen = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.75rem',
-                    padding: '0.75rem 1.5rem',
+                    padding: isSmallMobile ? '0.6rem 1rem' : isMobile ? '0.75rem 1.25rem' : '0.75rem 1.5rem',
                     background: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '12px',
                     color: 'white',
-                    fontSize: '1rem',
+                    fontSize: isSmallMobile ? '0.9rem' : '1rem',
                     fontWeight: '600',
                     cursor: 'pointer',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    minHeight: '44px',
+                    minWidth: '44px'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
@@ -1699,11 +1771,11 @@ const HomeScreen = () => {
                     e.currentTarget.style.transform = 'translateX(0)';
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem' }}>←</span>
+                  <span style={{ fontSize: isSmallMobile ? '1rem' : '1.2rem' }}>←</span>
                   Back to Requests
                 </button>
                 <h2 style={{
-                  fontSize: '2rem',
+                  fontSize: isSmallMobile ? '1.5rem' : isMobile ? '1.8rem' : '2rem',
                   fontWeight: '700',
                   color: 'white',
                   margin: 0
@@ -1715,44 +1787,47 @@ const HomeScreen = () => {
               <div style={{
                 background: 'rgba(20, 20, 20, 0.8)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '25px',
+                borderRadius: isSmallMobile ? '20px' : '25px',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                padding: '2.5rem',
+                padding: isSmallMobile ? '1.5rem' : isMobile ? '2rem' : '2.5rem',
                 boxShadow: '0 25px 50px rgba(0, 0, 0, 0.4)',
                 marginBottom: '3rem'
               }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '1.5rem',
-                  marginBottom: '2rem',
-                  paddingBottom: '2rem',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                  gap: isSmallMobile ? '1rem' : '1.5rem',
+                  marginBottom: isSmallMobile ? '1.5rem' : '2rem',
+                  paddingBottom: isSmallMobile ? '1.5rem' : '2rem',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                  flexDirection: isSmallMobile ? 'column' : 'row'
                 }}>
                   <div style={{
-                    width: '80px',
-                    height: '80px',
+                    width: isSmallMobile ? '60px' : isMobile ? '70px' : '80px',
+                    height: isSmallMobile ? '60px' : isMobile ? '70px' : '80px',
                     background: subjectData.gradient,
-                    borderRadius: '20px',
+                    borderRadius: isSmallMobile ? '15px' : '20px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '2.5rem',
+                    fontSize: isSmallMobile ? '2rem' : isMobile ? '2.2rem' : '2.5rem',
                     flexShrink: 0,
                     boxShadow: `0 15px 30px ${subjectData.color}40`
                   }}>
                     {selectedRequest.icon}
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, width: '100%' }}>
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'flex-start',
-                      marginBottom: '0.75rem'
+                      marginBottom: '0.75rem',
+                      flexDirection: isSmallMobile ? 'column' : 'row',
+                      gap: isSmallMobile ? '1rem' : '0'
                     }}>
-                      <div>
+                      <div style={{ width: '100%' }}>
                         <h3 style={{
-                          fontSize: '1.8rem',
+                          fontSize: isSmallMobile ? '1.4rem' : isMobile ? '1.6rem' : '1.8rem',
                           fontWeight: '700',
                           color: 'white',
                           margin: '0 0 0.5rem 0'
@@ -1762,7 +1837,9 @@ const HomeScreen = () => {
                         <div style={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '1.5rem'
+                          gap: isSmallMobile ? '1rem' : '1.5rem',
+                          flexDirection: isSmallMobile ? 'column' : 'row',
+                          alignItems: isSmallMobile ? 'flex-start' : 'center'
                         }}>
                           <div style={{
                             display: 'flex',
@@ -1770,14 +1847,14 @@ const HomeScreen = () => {
                             gap: '0.5rem'
                           }}>
                             <div style={{
-                              width: '40px',
-                              height: '40px',
+                              width: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
+                              height: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
                               background: subjectData.gradient,
                               borderRadius: '10px',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              fontSize: '1.2rem',
+                              fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem',
                               fontWeight: '600',
                               color: 'white'
                             }}>
@@ -1785,14 +1862,14 @@ const HomeScreen = () => {
                             </div>
                             <div>
                               <div style={{
-                                fontSize: '1.1rem',
+                                fontSize: isSmallMobile ? '1rem' : isMobile ? '1.05rem' : '1.1rem',
                                 fontWeight: '600',
                                 color: 'white'
                               }}>
                                 {selectedRequest.name}
                               </div>
                               <div style={{
-                                fontSize: '0.9rem',
+                                fontSize: isSmallMobile ? '0.8rem' : isMobile ? '0.85rem' : '0.9rem',
                                 color: 'rgba(255, 255, 255, 0.6)'
                               }}>
                                 {selectedRequest.rollNo}
@@ -1802,13 +1879,14 @@ const HomeScreen = () => {
                           <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.75rem',
-                            paddingLeft: '1.5rem',
-                            borderLeft: '1px solid rgba(255, 255, 255, 0.1)'
+                            gap: isSmallMobile ? '0.5rem' : '0.75rem',
+                            paddingLeft: isSmallMobile ? '0' : '1.5rem',
+                            borderLeft: isSmallMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                            flexWrap: 'wrap'
                           }}>
                             <span style={{
-                              fontSize: '1rem',
-                              padding: '0.5rem 1.5rem',
+                              fontSize: isSmallMobile ? '0.9rem' : '1rem',
+                              padding: isSmallMobile ? '0.4rem 1rem' : '0.5rem 1.5rem',
                               background: `rgba(${getStatusColor(selectedRequest.status)}${selectedRequest.status === 'answered' ? '0.2' : '0.15'})`,
                               color: getStatusColor(selectedRequest.status),
                               borderRadius: '12px',
@@ -1818,7 +1896,7 @@ const HomeScreen = () => {
                               {getStatusText(selectedRequest.status)}
                             </span>
                             <span style={{
-                              fontSize: '1rem',
+                              fontSize: isSmallMobile ? '0.9rem' : '1rem',
                               color: subjectData.color,
                               fontWeight: '600'
                             }}>
@@ -1828,17 +1906,18 @@ const HomeScreen = () => {
                         </div>
                       </div>
                       <div style={{
-                        textAlign: 'right'
+                        textAlign: isSmallMobile ? 'left' : 'right',
+                        width: isSmallMobile ? '100%' : 'auto'
                       }}>
                         <div style={{
-                          fontSize: '1rem',
+                          fontSize: isSmallMobile ? '0.9rem' : '1rem',
                           color: 'rgba(255, 255, 255, 0.6)',
                           marginBottom: '0.25rem'
                         }}>
                           Posted
                         </div>
                         <div style={{
-                          fontSize: '1.1rem',
+                          fontSize: isSmallMobile ? '1rem' : isMobile ? '1.05rem' : '1.1rem',
                           fontWeight: '600',
                           color: 'white'
                         }}>
@@ -1849,9 +1928,9 @@ const HomeScreen = () => {
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '2.5rem' }}>
+                <div style={{ marginBottom: isSmallMobile ? '2rem' : '2.5rem' }}>
                   <h4 style={{
-                    fontSize: '1.3rem',
+                    fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.25rem' : '1.3rem',
                     fontWeight: '600',
                     color: 'white',
                     marginBottom: '1rem',
@@ -1860,14 +1939,14 @@ const HomeScreen = () => {
                     gap: '0.75rem'
                   }}>
                     <span style={{
-                      width: '36px',
-                      height: '36px',
+                      width: isSmallMobile ? '30px' : isMobile ? '33px' : '36px',
+                      height: isSmallMobile ? '30px' : isMobile ? '33px' : '36px',
                       background: subjectData.gradient,
                       borderRadius: '10px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.2rem'
+                      fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'
                     }}>
                       📄
                     </span>
@@ -1875,12 +1954,12 @@ const HomeScreen = () => {
                   </h4>
                   <div style={{
                     background: 'rgba(255, 255, 255, 0.03)',
-                    borderRadius: '15px',
-                    padding: '2rem',
+                    borderRadius: isSmallMobile ? '12px' : '15px',
+                    padding: isSmallMobile ? '1.5rem' : '2rem',
                     border: '1px solid rgba(255, 255, 255, 0.05)'
                   }}>
                     <p style={{
-                      fontSize: '1.1rem',
+                      fontSize: isSmallMobile ? '0.95rem' : isMobile ? '1.05rem' : '1.1rem',
                       color: 'rgba(255, 255, 255, 0.9)',
                       lineHeight: '1.7',
                       margin: 0
@@ -1890,9 +1969,9 @@ const HomeScreen = () => {
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '2.5rem' }}>
+                <div style={{ marginBottom: isSmallMobile ? '2rem' : '2.5rem' }}>
                   <h4 style={{
-                    fontSize: '1.3rem',
+                    fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.25rem' : '1.3rem',
                     fontWeight: '600',
                     color: 'white',
                     marginBottom: '1rem',
@@ -1901,14 +1980,14 @@ const HomeScreen = () => {
                     gap: '0.75rem'
                   }}>
                     <span style={{
-                      width: '36px',
-                      height: '36px',
+                      width: isSmallMobile ? '30px' : isMobile ? '33px' : '36px',
+                      height: isSmallMobile ? '30px' : isMobile ? '33px' : '36px',
                       background: subjectData.gradient,
                       borderRadius: '10px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.2rem'
+                      fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'
                     }}>
                       📋
                     </span>
@@ -1916,12 +1995,12 @@ const HomeScreen = () => {
                   </h4>
                   <div style={{
                     background: 'rgba(255, 255, 255, 0.03)',
-                    borderRadius: '15px',
-                    padding: '2rem',
+                    borderRadius: isSmallMobile ? '12px' : '15px',
+                    padding: isSmallMobile ? '1.5rem' : '2rem',
                     border: '1px solid rgba(255, 255, 255, 0.05)'
                   }}>
                     <p style={{
-                      fontSize: '1.1rem',
+                      fontSize: isSmallMobile ? '0.95rem' : isMobile ? '1.05rem' : '1.1rem',
                       color: 'rgba(255, 255, 255, 0.8)',
                       lineHeight: '1.7',
                       margin: 0
@@ -1934,7 +2013,7 @@ const HomeScreen = () => {
                 {selectedRequest.responses.length > 0 && (
                   <div>
                     <h4 style={{
-                      fontSize: '1.3rem',
+                      fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.25rem' : '1.3rem',
                       fontWeight: '600',
                       color: 'white',
                       marginBottom: '1rem',
@@ -1943,14 +2022,14 @@ const HomeScreen = () => {
                       gap: '0.75rem'
                     }}>
                       <span style={{
-                        width: '36px',
-                        height: '36px',
+                        width: isSmallMobile ? '30px' : isMobile ? '33px' : '36px',
+                        height: isSmallMobile ? '30px' : isMobile ? '33px' : '36px',
                         background: subjectData.gradient,
                         borderRadius: '10px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '1.2rem'
+                        fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'
                       }}>
                         💬
                       </span>
@@ -1958,47 +2037,47 @@ const HomeScreen = () => {
                     </h4>
                     <div style={{
                       background: 'rgba(255, 255, 255, 0.03)',
-                      borderRadius: '15px',
-                      padding: '2rem',
+                      borderRadius: isSmallMobile ? '12px' : '15px',
+                      padding: isSmallMobile ? '1.5rem' : '2rem',
                       border: '1px solid rgba(255, 255, 255, 0.05)'
                     }}>
                       {selectedRequest.responses.map((response, index) => (
                         <div key={index} style={{
-                          padding: '1.5rem',
+                          padding: isSmallMobile ? '1.25rem' : '1.5rem',
                           background: 'rgba(255, 255, 255, 0.02)',
-                          borderRadius: '12px',
+                          borderRadius: isSmallMobile ? '10px' : '12px',
                           marginBottom: '1rem',
                           border: '1px solid rgba(255, 255, 255, 0.05)'
                         }}>
                           <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '1rem',
+                            gap: isSmallMobile ? '0.75rem' : '1rem',
                             marginBottom: '1rem'
                           }}>
                             <div style={{
-                              width: '45px',
-                              height: '45px',
+                              width: isSmallMobile ? '35px' : isMobile ? '40px' : '45px',
+                              height: isSmallMobile ? '35px' : isMobile ? '40px' : '45px',
                               background: 'rgba(16, 185, 129, 0.2)',
                               borderRadius: '10px',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              fontSize: '1.2rem',
+                              fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem',
                               color: '#10b981'
                             }}>
                               👨‍🏫
                             </div>
                             <div>
                               <div style={{
-                                fontSize: '1.1rem',
+                                fontSize: isSmallMobile ? '1rem' : isMobile ? '1.05rem' : '1.1rem',
                                 fontWeight: '600',
                                 color: 'white'
                               }}>
                                 Instructor Response
                               </div>
                               <div style={{
-                                fontSize: '0.9rem',
+                                fontSize: isSmallMobile ? '0.8rem' : isMobile ? '0.85rem' : '0.9rem',
                                 color: 'rgba(255, 255, 255, 0.6)'
                               }}>
                                 1 hour ago
@@ -2006,7 +2085,7 @@ const HomeScreen = () => {
                             </div>
                           </div>
                           <p style={{
-                            fontSize: '1rem',
+                            fontSize: isSmallMobile ? '0.9rem' : isMobile ? '0.95rem' : '1rem',
                             color: 'rgba(255, 255, 255, 0.8)',
                             lineHeight: '1.6',
                             margin: 0
@@ -2026,28 +2105,29 @@ const HomeScreen = () => {
           {activeButton === 'ask-lecture' && (
             <div style={{
               animation: 'fadeIn 0.5s ease',
-              padding: '2rem'
+              padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '2rem'
             }}>
               <div style={{
-                width: '120px',
-                height: '120px',
+                width: isSmallMobile ? '90px' : isMobile ? '100px' : '120px',
+                height: isSmallMobile ? '90px' : isMobile ? '100px' : '120px',
                 background: subjectData.gradient,
-                borderRadius: '30px',
+                borderRadius: isSmallMobile ? '25px' : '30px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '4rem',
+                fontSize: isSmallMobile ? '3rem' : isMobile ? '3.5rem' : '4rem',
                 margin: '0 auto 2rem',
                 boxShadow: `0 15px 30px ${subjectData.color}40`
               }}>
                 🎓
               </div>
               <h2 style={{
-                fontSize: '2.5rem',
+                fontSize: isSmallMobile ? '1.8rem' : isMobile ? '2.2rem' : '2.5rem',
                 fontWeight: '700',
                 color: 'white',
-                marginBottom: '2rem',
-                textAlign: 'center'
+                marginBottom: isSmallMobile ? '1.5rem' : '2rem',
+                textAlign: 'center',
+                padding: isSmallMobile ? '0 1rem' : '0'
               }}>
                 Request a Lecture
               </h2>
@@ -2055,35 +2135,35 @@ const HomeScreen = () => {
               {/* Form Container */}
               <div style={{
                 width: '100%',
-                maxWidth: '800px',
+                maxWidth: isSmallMobile ? '100%' : isMobile ? '600px' : '800px',
                 background: 'rgba(20, 20, 20, 0.8)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '25px',
+                borderRadius: isSmallMobile ? '20px' : '25px',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                padding: '2.5rem',
+                padding: isSmallMobile ? '1.5rem' : isMobile ? '2rem' : '2.5rem',
                 boxShadow: '0 25px 50px rgba(0, 0, 0, 0.4)',
                 margin: '0 auto 2rem'
               }}>
                 {/* Personal Information Section */}
-                <div style={{ marginBottom: '2.5rem' }}>
+                <div style={{ marginBottom: isSmallMobile ? '2rem' : '2.5rem' }}>
                   <h3 style={{
-                    fontSize: '1.5rem',
+                    fontSize: isSmallMobile ? '1.3rem' : isMobile ? '1.4rem' : '1.5rem',
                     fontWeight: '600',
                     color: 'white',
-                    marginBottom: '1.5rem',
+                    marginBottom: isSmallMobile ? '1.25rem' : '1.5rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.75rem'
                   }}>
                     <span style={{
-                      width: '40px',
-                      height: '40px',
+                      width: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
+                      height: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
                       background: subjectData.gradient,
                       borderRadius: '10px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.2rem'
+                      fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'
                     }}>
                       👤
                     </span>
@@ -2092,15 +2172,15 @@ const HomeScreen = () => {
 
                   <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                    gap: '1.5rem',
+                    gridTemplateColumns: isSmallMobile ? '1fr' : 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: isSmallMobile ? '1rem' : '1.5rem',
                     marginBottom: '1.5rem'
                   }}>
                     {/* Name Field */}
                     <div>
                       <label style={{
                         display: 'block',
-                        fontSize: '0.95rem',
+                        fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                         color: 'rgba(255, 255, 255, 0.7)',
                         marginBottom: '0.5rem',
                         fontWeight: '500'
@@ -2114,12 +2194,12 @@ const HomeScreen = () => {
                         placeholder="Enter your full name"
                         style={{
                           width: '100%',
-                          padding: '1rem 1.25rem',
+                          padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                           background: 'rgba(255, 255, 255, 0.05)',
                           border: '1px solid rgba(255, 255, 255, 0.1)',
                           borderRadius: '12px',
                           color: 'white',
-                          fontSize: '1rem',
+                          fontSize: '16px',
                           outline: 'none',
                           transition: 'all 0.3s ease'
                         }}
@@ -2138,7 +2218,7 @@ const HomeScreen = () => {
                     <div>
                       <label style={{
                         display: 'block',
-                        fontSize: '0.95rem',
+                        fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                         color: 'rgba(255, 255, 255, 0.7)',
                         marginBottom: '0.5rem',
                         fontWeight: '500'
@@ -2152,12 +2232,12 @@ const HomeScreen = () => {
                         placeholder="Enter your roll number"
                         style={{
                           width: '100%',
-                          padding: '1rem 1.25rem',
+                          padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                           background: 'rgba(255, 255, 255, 0.05)',
                           border: '1px solid rgba(255, 255, 255, 0.1)',
                           borderRadius: '12px',
                           color: 'white',
-                          fontSize: '1rem',
+                          fontSize: '16px',
                           outline: 'none',
                           transition: 'all 0.3s ease'
                         }}
@@ -2177,7 +2257,7 @@ const HomeScreen = () => {
                   <div>
                     <label style={{
                       display: 'block',
-                      fontSize: '0.95rem',
+                      fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                       color: 'rgba(255, 255, 255, 0.7)',
                       marginBottom: '0.5rem',
                       fontWeight: '500'
@@ -2191,12 +2271,12 @@ const HomeScreen = () => {
                       placeholder="Email, phone number, or any preferred contact method"
                       style={{
                         width: '100%',
-                        padding: '1rem 1.25rem',
+                        padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '12px',
                         color: 'white',
-                        fontSize: '1rem',
+                        fontSize: '16px',
                         outline: 'none',
                         transition: 'all 0.3s ease'
                       }}
@@ -2213,25 +2293,25 @@ const HomeScreen = () => {
                 </div>
 
                 {/* Lecture Request Section */}
-                <div style={{ marginBottom: '2.5rem' }}>
+                <div style={{ marginBottom: isSmallMobile ? '2rem' : '2.5rem' }}>
                   <h3 style={{
-                    fontSize: '1.5rem',
+                    fontSize: isSmallMobile ? '1.3rem' : isMobile ? '1.4rem' : '1.5rem',
                     fontWeight: '600',
                     color: 'white',
-                    marginBottom: '1.5rem',
+                    marginBottom: isSmallMobile ? '1.25rem' : '1.5rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.75rem'
                   }}>
                     <span style={{
-                      width: '40px',
-                      height: '40px',
+                      width: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
+                      height: isSmallMobile ? '35px' : isMobile ? '38px' : '40px',
                       background: subjectData.gradient,
                       borderRadius: '10px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.2rem'
+                      fontSize: isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'
                     }}>
                       📚
                     </span>
@@ -2242,7 +2322,7 @@ const HomeScreen = () => {
                   <div style={{ marginBottom: '1.5rem' }}>
                     <label style={{
                       display: 'block',
-                      fontSize: '0.95rem',
+                      fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                       color: 'rgba(255, 255, 255, 0.7)',
                       marginBottom: '0.5rem',
                       fontWeight: '500'
@@ -2256,12 +2336,12 @@ const HomeScreen = () => {
                       rows="4"
                       style={{
                         width: '100%',
-                        padding: '1rem 1.25rem',
+                        padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '12px',
                         color: 'white',
-                        fontSize: '1rem',
+                        fontSize: '16px',
                         outline: 'none',
                         transition: 'all 0.3s ease',
                         resize: 'vertical',
@@ -2283,7 +2363,7 @@ const HomeScreen = () => {
                   <div>
                     <label style={{
                       display: 'block',
-                      fontSize: '0.95rem',
+                      fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                       color: 'rgba(255, 255, 255, 0.7)',
                       marginBottom: '0.5rem',
                       fontWeight: '500'
@@ -2297,12 +2377,12 @@ const HomeScreen = () => {
                       rows="4"
                       style={{
                         width: '100%',
-                        padding: '1rem 1.25rem',
+                        padding: isSmallMobile ? '0.85rem 1rem' : '1rem 1.25rem',
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '12px',
                         color: 'white',
-                        fontSize: '1rem',
+                        fontSize: '16px',
                         outline: 'none',
                         transition: 'all 0.3s ease',
                         resize: 'vertical',
@@ -2319,7 +2399,7 @@ const HomeScreen = () => {
                       }}
                     />
                     <p style={{
-                      fontSize: '0.85rem',
+                      fontSize: isSmallMobile ? '0.8rem' : '0.85rem',
                       color: 'rgba(255, 255, 255, 0.5)',
                       marginTop: '0.5rem',
                       fontStyle: 'italic'
@@ -2333,25 +2413,30 @@ const HomeScreen = () => {
                 <div style={{
                   display: 'flex',
                   justifyContent: 'center',
-                  gap: '1.5rem',
-                  marginTop: '2rem'
+                  gap: isSmallMobile ? '1rem' : '1.5rem',
+                  marginTop: isSmallMobile ? '1.5rem' : '2rem',
+                  flexDirection: isSmallMobile ? 'column' : 'row'
                 }}>
                   <button
                     onClick={handleSubmitRequest}
                     style={{
-                      padding: '1rem 3rem',
+                      padding: isSmallMobile ? '0.9rem 2rem' : isMobile ? '1rem 2.5rem' : '1rem 3rem',
                       background: subjectData.gradient,
                       border: 'none',
                       borderRadius: '12px',
                       color: 'white',
-                      fontSize: '1.1rem',
+                      fontSize: isSmallMobile ? '1rem' : isMobile ? '1.05rem' : '1.1rem',
                       fontWeight: '600',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.75rem',
-                      boxShadow: `0 8px 20px ${subjectData.color}40`
+                      boxShadow: `0 8px 20px ${subjectData.color}40`,
+                      minHeight: '44px',
+                      minWidth: '44px',
+                      justifyContent: 'center',
+                      width: isSmallMobile ? '100%' : 'auto'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-3px)';
@@ -2369,18 +2454,22 @@ const HomeScreen = () => {
                   <button
                     onClick={() => handleButtonClick('homepage')}
                     style={{
-                      padding: '1rem 2rem',
+                      padding: isSmallMobile ? '0.9rem 1.5rem' : isMobile ? '1rem 1.75rem' : '1rem 2rem',
                       background: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '12px',
                       color: 'white',
-                      fontSize: '1rem',
+                      fontSize: isSmallMobile ? '0.95rem' : '1rem',
                       fontWeight: '600',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.75rem'
+                      gap: '0.75rem',
+                      minHeight: '44px',
+                      minWidth: '44px',
+                      justifyContent: 'center',
+                      width: isSmallMobile ? '100%' : 'auto'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
@@ -2398,14 +2487,14 @@ const HomeScreen = () => {
 
                 {/* Form Guidelines */}
                 <div style={{
-                  marginTop: '2rem',
-                  padding: '1.5rem',
+                  marginTop: isSmallMobile ? '1.5rem' : '2rem',
+                  padding: isSmallMobile ? '1rem' : '1.5rem',
                   background: 'rgba(255, 255, 255, 0.02)',
                   borderRadius: '12px',
                   border: '1px solid rgba(255, 255, 255, 0.05)'
                 }}>
                   <h4 style={{
-                    fontSize: '1rem',
+                    fontSize: isSmallMobile ? '0.95rem' : '1rem',
                     fontWeight: '600',
                     color: 'white',
                     marginBottom: '0.75rem',
@@ -2422,7 +2511,7 @@ const HomeScreen = () => {
                     margin: 0
                   }}>
                     <li style={{
-                      fontSize: '0.9rem',
+                      fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                       color: 'rgba(255, 255, 255, 0.6)',
                       marginBottom: '0.5rem',
                       display: 'flex',
@@ -2433,7 +2522,7 @@ const HomeScreen = () => {
                       Be specific about the topic you need help with
                     </li>
                     <li style={{
-                      fontSize: '0.9rem',
+                      fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                       color: 'rgba(255, 255, 255, 0.6)',
                       marginBottom: '0.5rem',
                       display: 'flex',
@@ -2444,7 +2533,7 @@ const HomeScreen = () => {
                       Mention any specific concepts or problems you're struggling with
                     </li>
                     <li style={{
-                      fontSize: '0.9rem',
+                      fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                       color: 'rgba(255, 255, 255, 0.6)',
                       display: 'flex',
                       alignItems: 'center',
@@ -2463,28 +2552,29 @@ const HomeScreen = () => {
           {activeButton === 'query-center' && (
             <div style={{
               animation: 'fadeIn 0.5s ease',
-              padding: '2rem'
+              padding: isSmallMobile ? '1rem' : isMobile ? '1.5rem' : '2rem'
             }}>
               <div style={{
-                width: '120px',
-                height: '120px',
+                width: isSmallMobile ? '90px' : isMobile ? '100px' : '120px',
+                height: isSmallMobile ? '90px' : isMobile ? '100px' : '120px',
                 background: subjectData.gradient,
-                borderRadius: '30px',
+                borderRadius: isSmallMobile ? '25px' : '30px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '4rem',
+                fontSize: isSmallMobile ? '3rem' : isMobile ? '3.5rem' : '4rem',
                 margin: '0 auto 2rem',
                 boxShadow: `0 15px 30px ${subjectData.color}40`
               }}>
                 ❓
               </div>
               <h2 style={{
-                fontSize: '2.5rem',
+                fontSize: isSmallMobile ? '1.8rem' : isMobile ? '2.2rem' : '2.5rem',
                 fontWeight: '700',
                 color: 'white',
-                marginBottom: '3rem',
-                textAlign: 'center'
+                marginBottom: isSmallMobile ? '2rem' : '3rem',
+                textAlign: 'center',
+                padding: isSmallMobile ? '0 1rem' : '0'
               }}>
                 Query Center
               </h2>
@@ -2492,8 +2582,10 @@ const HomeScreen = () => {
               {/* Two Column Layout */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
-                gap: '2.5rem',
+                gridTemplateColumns: isSmallMobile ? '1fr' :
+                  isMobile ? '1fr' :
+                    'repeat(auto-fit, minmax(500px, 1fr))',
+                gap: isSmallMobile ? '1.5rem' : isMobile ? '2rem' : '2.5rem',
                 marginBottom: '3rem'
               }}>
                 {/* Teachers Help Section - Only ONE Teacher for the Subject */}
@@ -2501,39 +2593,39 @@ const HomeScreen = () => {
                   <div style={{
                     background: 'rgba(20, 20, 20, 0.8)',
                     backdropFilter: 'blur(20px)',
-                    borderRadius: '25px',
+                    borderRadius: isSmallMobile ? '20px' : '25px',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                    padding: '2rem',
+                    padding: isSmallMobile ? '1.5rem' : isMobile ? '1.75rem' : '2rem',
                     boxShadow: '0 25px 50px rgba(0, 0, 0, 0.4)',
                     height: '100%'
                   }}>
                     <h3 style={{
-                      fontSize: '1.8rem',
+                      fontSize: isSmallMobile ? '1.4rem' : isMobile ? '1.6rem' : '1.8rem',
                       fontWeight: '700',
                       color: 'white',
-                      marginBottom: '1.5rem',
+                      marginBottom: isSmallMobile ? '1.25rem' : '1.5rem',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.75rem'
                     }}>
                       <span style={{
-                        width: '50px',
-                        height: '50px',
+                        width: isSmallMobile ? '40px' : isMobile ? '45px' : '50px',
+                        height: isSmallMobile ? '40px' : isMobile ? '45px' : '50px',
                         background: subjectData.gradient,
-                        borderRadius: '12px',
+                        borderRadius: isSmallMobile ? '10px' : '12px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '1.5rem'
+                        fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.5rem'
                       }}>
                         👨‍🏫
                       </span>
                       {subjectData.title} Teacher
                     </h3>
                     <p style={{
-                      fontSize: '1rem',
+                      fontSize: isSmallMobile ? '0.9rem' : isMobile ? '0.95rem' : '1rem',
                       color: 'rgba(255, 255, 255, 0.7)',
-                      marginBottom: '2rem',
+                      marginBottom: isSmallMobile ? '1.5rem' : '2rem',
                       lineHeight: '1.6'
                     }}>
                       Get instant help from your {subjectData.title} instructor. Click to start a chat.
@@ -2542,9 +2634,9 @@ const HomeScreen = () => {
                     {/* Single Teacher Card */}
                     <div style={{
                       background: 'rgba(255, 255, 255, 0.03)',
-                      borderRadius: '18px',
+                      borderRadius: isSmallMobile ? '15px' : '18px',
                       border: '1px solid rgba(255, 255, 255, 0.05)',
-                      padding: '1.5rem',
+                      padding: isSmallMobile ? '1.25rem' : '1.5rem',
                       transition: 'all 0.3s ease',
                       cursor: 'pointer',
                       minHeight: '250px',
@@ -2565,33 +2657,36 @@ const HomeScreen = () => {
                       <div style={{
                         display: 'flex',
                         alignItems: 'flex-start',
-                        gap: '1.25rem',
-                        flex: 1
+                        gap: isSmallMobile ? '1rem' : '1.25rem',
+                        flex: 1,
+                        flexDirection: isSmallMobile ? 'column' : 'row'
                       }}>
                         <div style={{
-                          width: '90px',
-                          height: '90px',
+                          width: isSmallMobile ? '70px' : isMobile ? '80px' : '90px',
+                          height: isSmallMobile ? '70px' : isMobile ? '80px' : '90px',
                           background: subjectData.gradient,
-                          borderRadius: '20px',
+                          borderRadius: isSmallMobile ? '15px' : '20px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '2.8rem',
+                          fontSize: isSmallMobile ? '2.2rem' : isMobile ? '2.5rem' : '2.8rem',
                           flexShrink: 0,
                           boxShadow: `0 10px 25px ${subjectData.color}40`
                         }}>
                           {subjectTeacher.avatar}
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, width: '100%' }}>
                           <div style={{
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'flex-start',
-                            marginBottom: '0.75rem'
+                            marginBottom: '0.75rem',
+                            flexDirection: isSmallMobile ? 'column' : 'row',
+                            gap: isSmallMobile ? '0.75rem' : '0'
                           }}>
                             <div>
                               <h4 style={{
-                                fontSize: '1.5rem',
+                                fontSize: isSmallMobile ? '1.3rem' : isMobile ? '1.4rem' : '1.5rem',
                                 fontWeight: '700',
                                 color: 'white',
                                 margin: '0 0 0.5rem 0'
@@ -2601,11 +2696,12 @@ const HomeScreen = () => {
                               <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '1rem',
-                                marginBottom: '0.5rem'
+                                gap: isSmallMobile ? '0.75rem' : '1rem',
+                                marginBottom: '0.5rem',
+                                flexWrap: 'wrap'
                               }}>
                                 <span style={{
-                                  fontSize: '1rem',
+                                  fontSize: isSmallMobile ? '0.9rem' : '1rem',
                                   color: subjectData.color,
                                   fontWeight: '600',
                                   padding: '0.3rem 0.8rem',
@@ -2616,7 +2712,7 @@ const HomeScreen = () => {
                                   {subjectTeacher.subject}
                                 </span>
                                 <span style={{
-                                  fontSize: '0.85rem',
+                                  fontSize: isSmallMobile ? '0.8rem' : '0.85rem',
                                   color: 'rgba(255, 255, 255, 0.5)',
                                   fontStyle: 'italic'
                                 }}>
@@ -2627,12 +2723,12 @@ const HomeScreen = () => {
                             <div style={{
                               display: 'flex',
                               flexDirection: 'column',
-                              alignItems: 'flex-end',
+                              alignItems: isSmallMobile ? 'flex-start' : 'flex-end',
                               gap: '0.5rem'
                             }}>
                               <span style={{
-                                fontSize: '0.85rem',
-                                padding: '0.35rem 1rem',
+                                fontSize: isSmallMobile ? '0.8rem' : '0.85rem',
+                                padding: isSmallMobile ? '0.3rem 0.75rem' : '0.35rem 1rem',
                                 background: subjectTeacher.status === 'online'
                                   ? 'rgba(16, 185, 129, 0.2)'
                                   : 'rgba(100, 116, 139, 0.2)',
@@ -2644,7 +2740,7 @@ const HomeScreen = () => {
                                 {subjectTeacher.status === 'online' ? '🟢 Online' : '⚫ Offline'}
                               </span>
                               <span style={{
-                                fontSize: '0.8rem',
+                                fontSize: isSmallMobile ? '0.75rem' : '0.8rem',
                                 color: 'rgba(255, 255, 255, 0.4)'
                               }}>
                                 Available: {subjectTeacher.availability}
@@ -2656,20 +2752,20 @@ const HomeScreen = () => {
                             marginBottom: '1rem'
                           }}>
                             <div style={{
-                              fontSize: '0.95rem',
+                              fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                               color: subjectData.color,
                               fontWeight: '500',
                               marginBottom: '0.5rem'
                             }}>
-                              <span style={{ fontSize: '1rem' }}>🎓</span> {subjectTeacher.qualification}
+                              <span style={{ fontSize: isSmallMobile ? '0.9rem' : '1rem' }}>🎓</span> {subjectTeacher.qualification}
                             </div>
                           </div>
 
                           <div style={{
-                            marginBottom: '1.5rem'
+                            marginBottom: isSmallMobile ? '1.25rem' : '1.5rem'
                           }}>
                             <div style={{
-                              fontSize: '0.9rem',
+                              fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                               color: 'rgba(255, 255, 255, 0.6)',
                               marginBottom: '0.5rem'
                             }}>
@@ -2682,7 +2778,7 @@ const HomeScreen = () => {
                             }}>
                               {subjectTeacher.expertise.map((skill, index) => (
                                 <span key={index} style={{
-                                  fontSize: '0.8rem',
+                                  fontSize: isSmallMobile ? '0.75rem' : '0.8rem',
                                   padding: '0.3rem 0.8rem',
                                   background: 'rgba(255, 255, 255, 0.05)',
                                   color: subjectData.color,
@@ -2702,10 +2798,12 @@ const HomeScreen = () => {
                             justifyContent: 'space-between',
                             paddingTop: '1rem',
                             borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                            marginTop: 'auto'
+                            marginTop: 'auto',
+                            flexDirection: isSmallMobile ? 'column' : 'row',
+                            gap: isSmallMobile ? '0.75rem' : '0'
                           }}>
                             <span style={{
-                              fontSize: '0.9rem',
+                              fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                               color: 'rgba(255, 255, 255, 0.4)',
                               display: 'flex',
                               alignItems: 'center',
@@ -2721,7 +2819,7 @@ const HomeScreen = () => {
                               {subjectTeacher.status === 'online' ? 'Available for instant chat' : 'Currently offline'}
                             </span>
                             <span style={{
-                              fontSize: '0.9rem',
+                              fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                               color: subjectData.color,
                               display: 'flex',
                               alignItems: 'center',
@@ -2738,14 +2836,14 @@ const HomeScreen = () => {
 
                     {/* Teacher Availability Note */}
                     <div style={{
-                      marginTop: '1.5rem',
-                      padding: '1rem',
+                      marginTop: isSmallMobile ? '1.25rem' : '1.5rem',
+                      padding: isSmallMobile ? '0.75rem' : '1rem',
                       background: 'rgba(255, 255, 255, 0.02)',
                       borderRadius: '12px',
                       border: '1px solid rgba(255, 255, 255, 0.05)'
                     }}>
                       <div style={{
-                        fontSize: '0.85rem',
+                        fontSize: isSmallMobile ? '0.8rem' : '0.85rem',
                         color: 'rgba(255, 255, 255, 0.6)',
                         display: 'flex',
                         alignItems: 'center',
@@ -2753,7 +2851,7 @@ const HomeScreen = () => {
                       }}>
                         <span style={{
                           color: subjectData.color,
-                          fontSize: '1rem'
+                          fontSize: isSmallMobile ? '0.9rem' : '1rem'
                         }}>📅</span>
                         <span>
                           <strong>Note:</strong> {subjectTeacher.name} is available during {subjectTeacher.availability}. You can leave messages anytime.
@@ -2768,41 +2866,41 @@ const HomeScreen = () => {
                   <div style={{
                     background: 'rgba(20, 20, 20, 0.8)',
                     backdropFilter: 'blur(20px)',
-                    borderRadius: '25px',
+                    borderRadius: isSmallMobile ? '20px' : '25px',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                    padding: '2rem',
+                    padding: isSmallMobile ? '1.5rem' : isMobile ? '1.75rem' : '2rem',
                     boxShadow: '0 25px 50px rgba(0, 0, 0, 0.4)',
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column'
                   }}>
                     <h3 style={{
-                      fontSize: '1.8rem',
+                      fontSize: isSmallMobile ? '1.4rem' : isMobile ? '1.6rem' : '1.8rem',
                       fontWeight: '700',
                       color: 'white',
-                      marginBottom: '1.5rem',
+                      marginBottom: isSmallMobile ? '1.25rem' : '1.5rem',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.75rem'
                     }}>
                       <span style={{
-                        width: '50px',
-                        height: '50px',
+                        width: isSmallMobile ? '40px' : isMobile ? '45px' : '50px',
+                        height: isSmallMobile ? '40px' : isMobile ? '45px' : '50px',
                         background: subjectData.gradient,
-                        borderRadius: '12px',
+                        borderRadius: isSmallMobile ? '10px' : '12px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '1.5rem'
+                        fontSize: isSmallMobile ? '1.2rem' : isMobile ? '1.3rem' : '1.5rem'
                       }}>
                         📚
                       </span>
                       {subjectData.title} Resources
                     </h3>
                     <p style={{
-                      fontSize: '1rem',
+                      fontSize: isSmallMobile ? '0.9rem' : isMobile ? '0.95rem' : '1rem',
                       color: 'rgba(255, 255, 255, 0.7)',
-                      marginBottom: '2rem',
+                      marginBottom: isSmallMobile ? '1.5rem' : '2rem',
                       lineHeight: '1.6'
                     }}>
                       Useful learning resources and lecture recordings for {subjectData.title}. Add your own links to help others!
@@ -2811,17 +2909,17 @@ const HomeScreen = () => {
                     {/* Add New Link Form */}
                     <div style={{
                       background: 'rgba(255, 255, 255, 0.02)',
-                      borderRadius: '15px',
+                      borderRadius: isSmallMobile ? '12px' : '15px',
                       border: '1px solid rgba(255, 255, 255, 0.05)',
-                      padding: '1.5rem',
-                      marginBottom: '2rem',
+                      padding: isSmallMobile ? '1.25rem' : '1.5rem',
+                      marginBottom: isSmallMobile ? '1.5rem' : '2rem',
                       flexShrink: 0
                     }}>
                       <h4 style={{
-                        fontSize: '1.2rem',
+                        fontSize: isSmallMobile ? '1.1rem' : isMobile ? '1.15rem' : '1.2rem',
                         fontWeight: '600',
                         color: 'white',
-                        marginBottom: '1rem',
+                        marginBottom: isSmallMobile ? '0.75rem' : '1rem',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem'
@@ -2831,7 +2929,7 @@ const HomeScreen = () => {
                       </h4>
                       <div style={{
                         display: 'grid',
-                        gap: '1rem'
+                        gap: isSmallMobile ? '0.75rem' : '1rem'
                       }}>
                         <input
                           type="text"
@@ -2840,12 +2938,12 @@ const HomeScreen = () => {
                           placeholder="Lecture Title"
                           style={{
                             width: '100%',
-                            padding: '0.75rem 1rem',
+                            padding: isSmallMobile ? '0.7rem 0.9rem' : '0.75rem 1rem',
                             background: 'rgba(255, 255, 255, 0.05)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
                             borderRadius: '10px',
                             color: 'white',
-                            fontSize: '0.95rem',
+                            fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                             outline: 'none',
                             transition: 'all 0.3s ease'
                           }}
@@ -2865,12 +2963,12 @@ const HomeScreen = () => {
                           placeholder="https://example.com/lecture"
                           style={{
                             width: '100%',
-                            padding: '0.75rem 1rem',
+                            padding: isSmallMobile ? '0.7rem 0.9rem' : '0.75rem 1rem',
                             background: 'rgba(255, 255, 255, 0.05)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
                             borderRadius: '10px',
                             color: 'white',
-                            fontSize: '0.95rem',
+                            fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                             outline: 'none',
                             transition: 'all 0.3s ease'
                           }}
@@ -2890,12 +2988,12 @@ const HomeScreen = () => {
                           placeholder="Category (e.g., Programming, Math, etc.)"
                           style={{
                             width: '100%',
-                            padding: '0.75rem 1rem',
+                            padding: isSmallMobile ? '0.7rem 0.9rem' : '0.75rem 1rem',
                             background: 'rgba(255, 255, 255, 0.05)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
                             borderRadius: '10px',
                             color: 'white',
-                            fontSize: '0.95rem',
+                            fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                             outline: 'none',
                             transition: 'all 0.3s ease'
                           }}
@@ -2911,19 +3009,21 @@ const HomeScreen = () => {
                         <button
                           onClick={handleAddLink}
                           style={{
-                            padding: '0.75rem 1.5rem',
+                            padding: isSmallMobile ? '0.7rem 1.25rem' : '0.75rem 1.5rem',
                             background: subjectData.gradient,
                             border: 'none',
                             borderRadius: '10px',
                             color: 'white',
-                            fontSize: '0.95rem',
+                            fontSize: isSmallMobile ? '0.9rem' : '0.95rem',
                             fontWeight: '600',
                             cursor: 'pointer',
                             transition: 'all 0.3s ease',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '0.5rem'
+                            gap: '0.5rem',
+                            minHeight: '44px',
+                            minWidth: '44px'
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'translateY(-2px)';
@@ -2943,21 +3043,21 @@ const HomeScreen = () => {
                     {/* Links List - Increased Height */}
                     <div style={{
                       flex: 1,
-                      maxHeight: '400px',
+                      maxHeight: isSmallMobile ? '300px' : '400px',
                       overflowY: 'auto',
                       paddingRight: '0.5rem'
                     }}>
                       <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '1rem'
+                        gap: isSmallMobile ? '0.75rem' : '1rem'
                       }}>
                         {lectureLinks.map((link) => (
                           <div key={link.id} style={{
                             background: 'rgba(255, 255, 255, 0.03)',
-                            borderRadius: '15px',
+                            borderRadius: isSmallMobile ? '12px' : '15px',
                             border: '1px solid rgba(255, 255, 255, 0.05)',
-                            padding: '1.25rem',
+                            padding: isSmallMobile ? '1rem' : '1.25rem',
                             transition: 'all 0.3s ease',
                             minHeight: '120px',
                             display: 'flex',
@@ -2976,11 +3076,13 @@ const HomeScreen = () => {
                               display: 'flex',
                               justifyContent: 'space-between',
                               alignItems: 'flex-start',
-                              marginBottom: '1rem'
+                              marginBottom: isSmallMobile ? '0.75rem' : '1rem',
+                              flexDirection: isSmallMobile ? 'column' : 'row',
+                              gap: isSmallMobile ? '0.75rem' : '0'
                             }}>
-                              <div style={{ flex: 1 }}>
+                              <div style={{ flex: 1, width: '100%' }}>
                                 <h4 style={{
-                                  fontSize: '1.1rem',
+                                  fontSize: isSmallMobile ? '1rem' : isMobile ? '1.05rem' : '1.1rem',
                                   fontWeight: '600',
                                   color: 'white',
                                   margin: '0 0 0.5rem 0'
@@ -2990,11 +3092,11 @@ const HomeScreen = () => {
                                 <div style={{
                                   display: 'flex',
                                   alignItems: 'center',
-                                  gap: '1rem',
+                                  gap: isSmallMobile ? '0.75rem' : '1rem',
                                   flexWrap: 'wrap'
                                 }}>
                                   <span style={{
-                                    fontSize: '0.85rem',
+                                    fontSize: isSmallMobile ? '0.8rem' : '0.85rem',
                                     color: subjectData.color,
                                     fontWeight: '500',
                                     padding: '0.25rem 0.75rem',
@@ -3005,7 +3107,7 @@ const HomeScreen = () => {
                                     {link.category}
                                   </span>
                                   <span style={{
-                                    fontSize: '0.8rem',
+                                    fontSize: isSmallMobile ? '0.75rem' : '0.8rem',
                                     color: 'rgba(255, 255, 255, 0.5)',
                                     maxWidth: '300px',
                                     overflow: 'hidden',
@@ -3023,12 +3125,14 @@ const HomeScreen = () => {
                                   border: '1px solid rgba(239, 68, 68, 0.2)',
                                   borderRadius: '8px',
                                   color: '#ef4444',
-                                  fontSize: '0.8rem',
-                                  padding: '0.4rem 0.8rem',
+                                  fontSize: isSmallMobile ? '0.75rem' : '0.8rem',
+                                  padding: isSmallMobile ? '0.35rem 0.7rem' : '0.4rem 0.8rem',
                                   cursor: 'pointer',
                                   transition: 'all 0.3s ease',
                                   flexShrink: 0,
-                                  marginLeft: '1rem'
+                                  marginLeft: isSmallMobile ? '0' : '1rem',
+                                  minHeight: '44px',
+                                  minWidth: '44px'
                                 }}
                                 onMouseEnter={(e) => {
                                   e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
@@ -3046,19 +3150,21 @@ const HomeScreen = () => {
                               onClick={() => handleOpenLink(link.url)}
                               style={{
                                 width: '100%',
-                                padding: '0.75rem',
+                                padding: isSmallMobile ? '0.7rem' : '0.75rem',
                                 background: 'rgba(255, 255, 255, 0.05)',
                                 border: '1px solid rgba(255, 255, 255, 0.1)',
                                 borderRadius: '10px',
                                 color: subjectData.color,
-                                fontSize: '0.9rem',
+                                fontSize: isSmallMobile ? '0.85rem' : '0.9rem',
                                 fontWeight: '600',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '0.5rem'
+                                gap: '0.5rem',
+                                minHeight: '44px',
+                                minWidth: '44px'
                               }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
@@ -3085,23 +3191,25 @@ const HomeScreen = () => {
               <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                marginTop: '2rem'
+                marginTop: isSmallMobile ? '1.5rem' : '2rem'
               }}>
                 <button
                   onClick={() => handleButtonClick('homepage')}
                   style={{
-                    padding: '1rem 2rem',
+                    padding: isSmallMobile ? '0.9rem 1.5rem' : isMobile ? '1rem 1.75rem' : '1rem 2rem',
                     background: subjectData.gradient,
                     border: 'none',
                     borderRadius: '12px',
                     color: 'white',
-                    fontSize: '1rem',
+                    fontSize: isSmallMobile ? '0.95rem' : '1rem',
                     fontWeight: '600',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.75rem'
+                    gap: '0.75rem',
+                    minHeight: '44px',
+                    minWidth: '44px'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
